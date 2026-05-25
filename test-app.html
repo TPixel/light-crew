@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Light Crew — Fiktionsproduktion</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:#000;font-family:Tahoma,sans-serif;font-weight:700;color:#fff;display:flex;justify-content:center;min-height:100vh;min-height:100dvh}
+.phone{width:100%;max-width:430px;background:#0C0C12;border-radius:22px;min-height:100vh;min-height:100dvh;position:relative;overflow:hidden;display:flex;flex-direction:column}
+.header{padding:16px 16px 0;text-align:center;position:relative}
+.header h1{font-size:17px;letter-spacing:.5px;color:#fff}
+.header .subtitle{font-size:11px;color:#888;margin-top:2px;font-weight:400}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 16px 8px}
+.stat-card{background:#1a1a24;border:1px solid #2a2a36;border-radius:10px;padding:10px 12px;text-align:center}
+.stat-card .val{font-size:22px;color:#fff}
+.stat-card .val.red{color:#f87171}
+.stat-card .lbl{font-size:10px;color:#888;margin-top:2px;font-weight:400;text-transform:uppercase;letter-spacing:.5px}
+.legend-bar{display:flex;gap:12px;padding:4px 16px 8px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:10px;color:#888;font-weight:400}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.search-wrap{padding:0 16px 8px;position:relative}
+.search-input{width:100%;background:#1a1a24;border:1px solid #2a2a36;border-radius:10px;padding:10px 12px 10px 36px;color:#fff;font-family:Tahoma,sans-serif;font-size:13px;font-weight:400;outline:none}
+.search-input::placeholder{color:#555}
+.search-icon{position:absolute;left:28px;top:50%;transform:translateY(-50%);color:#555;font-size:14px;pointer-events:none}
+.filter-bar{display:flex;gap:6px;padding:0 16px 10px;overflow-x:auto;scrollbar-width:none}
+.filter-bar::-webkit-scrollbar{display:none}
+.filter-btn{background:#1a1a24;border:1px solid #2a2a36;border-radius:8px;padding:6px 12px;color:#888;font-family:Tahoma,sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s}
+.filter-btn.active{background:#7C6AF7;border-color:#7C6AF7;color:#fff}
+.section-label{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:1px;padding:10px 16px 6px;font-weight:700}
+.list{flex:1;overflow-y:auto;padding:0 16px 100px;-webkit-overflow-scrolling:touch}
+.row{background:#1a1a24;border:1px solid #2a2a36;border-radius:12px;margin-bottom:6px;overflow:hidden;transition:all .2s}
+.row-head{display:flex;align-items:center;padding:10px 12px;cursor:pointer;gap:10px;min-height:48px}
+.row-color{width:4px;height:32px;border-radius:2px;flex-shrink:0}
+.row-info{flex:1;min-width:0}
+.row-name{font-size:13px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-sub{font-size:10px;color:#888;font-weight:400;margin-top:1px}
+.row-fixture{font-size:10px;color:#7C6AF7;margin-right:4px}
+.row-dmx{font-size:10px;color:#7C6AF7;background:#1a1a30;padding:2px 6px;border-radius:4px;white-space:nowrap}
+.row-qty{font-size:11px;color:#888;white-space:nowrap}
+.row-chevron{color:#555;font-size:12px;transition:transform .2s}
+.row.open .row-chevron{transform:rotate(90deg)}
+.dep-dots{display:flex;gap:4px;margin-top:4px}
+.dep-dot{width:7px;height:7px;border-radius:50%}
+.dep-dot.ok{background:#4ade80}
+.dep-dot.miss{background:#f87171}
+.detail{display:none;padding:0 12px 12px}
+.row.open .detail{display:block}
+.detail-specs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.spec-card{background:#12121a;border-radius:8px;padding:8px}
+.spec-card .spec-lbl{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;font-weight:400}
+.spec-card .spec-val{font-size:13px;color:#fff;margin-top:2px}
+.detail-deps{margin-bottom:10px}
+.detail-deps h4{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;font-weight:700}
+.dep-row{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.dep-circle{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0}
+.dep-circle.ok{background:#1a3a1a;color:#4ade80}
+.dep-circle.miss{background:#3a1a1a;color:#f87171}
+.dep-label{font-size:11px;color:#ccc;font-weight:400}
+.detail-actions{display:flex;gap:6px;margin-top:8px}
+.detail-btn{flex:1;padding:8px;border-radius:8px;border:none;font-family:Tahoma,sans-serif;font-size:11px;font-weight:700;cursor:pointer;text-align:center}
+.detail-btn.edit{background:#7C6AF7;color:#fff}
+.detail-btn.remove{background:#3a1a1a;color:#f87171}
+.bottom-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#0C0C12;border-top:1px solid #2a2a36;padding:10px 16px;padding-bottom:max(10px,env(safe-area-inset-bottom));display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;z-index:50}
+.bar-btn{padding:10px 0;border-radius:10px;border:none;font-family:Tahoma,sans-serif;font-size:12px;font-weight:700;cursor:pointer;text-align:center}
+.bar-btn.primary{background:#7C6AF7;color:#fff}
+.bar-btn.secondary{background:#1a1a24;color:#888;border:1px solid #2a2a36}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;display:none;justify-content:center;align-items:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.modal-overlay.show{display:flex;animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{width:100%;max-width:430px;background:#0C0C12;border-radius:22px;min-height:100vh;min-height:100dvh;padding:16px;position:relative}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:#888;font-size:24px;cursor:pointer;z-index:5;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
+.modal h2{font-size:17px;color:#fff;text-align:center;margin-bottom:16px}
+.modal h3{font-size:12px;color:#555;text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;font-weight:700}
+.patch-table{width:100%;border-collapse:collapse}
+.patch-table th{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;text-align:left;padding:6px 8px;border-bottom:1px solid #2a2a36;font-weight:700}
+.patch-table td{font-size:11px;color:#ccc;padding:6px 8px;border-bottom:1px solid #1a1a24;font-weight:400}
+.patch-table .fixture-col{color:#7C6AF7;font-weight:700}
+.pack-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #1a1a24}
+.pack-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.pack-name{flex:1;font-size:12px;color:#ccc;font-weight:400}
+.pack-qty{font-size:12px;color:#fff}
+.power-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#1a1a24;border-radius:8px;margin-bottom:4px}
+.power-name{font-size:12px;color:#ccc;font-weight:400}
+.power-val{font-size:12px;color:#fff}
+.power-total{background:#7C6AF7;border-radius:10px;padding:12px;text-align:center;margin-bottom:12px}
+.power-total .big{font-size:28px;color:#fff}
+.power-total .sub{font-size:11px;color:rgba(255,255,255,.7);font-weight:400;margin-top:2px}
+.modal-print-btn{width:100%;padding:12px;background:#7C6AF7;color:#fff;border:none;border-radius:10px;font-family:Tahoma,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:12px}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#7C6AF7;color:#fff;padding:10px 20px;border-radius:10px;font-size:12px;font-weight:700;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+.form-group{margin-bottom:10px}
+.form-group label{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;font-weight:700}
+.form-input,.form-select{width:100%;background:#1a1a24;border:1px solid #2a2a36;border-radius:8px;padding:10px 12px;color:#fff;font-family:Tahoma,sans-serif;font-size:13px;font-weight:400;outline:none}
+.form-select{appearance:none;-webkit-appearance:none}
+.form-submit{width:100%;padding:12px;background:#7C6AF7;color:#fff;border:none;border-radius:10px;font-family:Tahoma,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:8px}
+.form-cancel{width:100%;padding:12px;background:#1a1a24;color:#888;border:1px solid #2a2a36;border-radius:10px;font-family:Tahoma,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:6px}
+.settings-gear{position:absolute;top:16px;right:16px;background:none;border:none;color:#555;font-size:18px;cursor:pointer}
+.dmx-edit-form{background:#12121a;border-radius:8px;padding:10px;margin-top:8px}
+.dmx-edit-form .form-group{margin-bottom:8px}
+.dmx-edit-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.dmx-edit-row .form-input{padding:8px}
+.dmx-save{padding:8px 16px;background:#7C6AF7;color:#fff;border:none;border-radius:8px;font-family:Tahoma,sans-serif;font-size:11px;font-weight:700;cursor:pointer}
+.dmx-cancel{padding:8px 16px;background:#1a1a24;color:#888;border:1px solid #2a2a36;border-radius:8px;font-family:Tahoma,sans-serif;font-size:11px;font-weight:700;cursor:pointer;margin-left:6px}
+@media print{
+body{background:#fff!important}
+.phone{background:#fff!important;max-width:100%!important;border-radius:0!important}
+.bottom-bar,.search-wrap,.filter-bar,.stats-grid,.legend-bar,.header,.settings-gear{display:none!important}
+.modal-overlay{position:static!important;background:#fff!important}
+.modal{background:#fff!important;border-radius:0!important;min-height:auto!important}
+.modal-close,.modal-print-btn{display:none!important}
+.modal h2,.modal h3{color:#000!important}
+.pack-name,.patch-table td,.power-name{color:#000!important}
+.patch-table th{color:#333!important}
+.pack-qty,.power-val,.spec-val{color:#000!important}
+.list{display:none!important}
+}
+</style>
+</head>
+<body>
+<div class="phone" id="app">
+  <div class="header">
+    <h1>Light Crew — Fiktionsproduktion</h1>
+    <p class="subtitle">Location 1 — Studie A</p>
+    <button class="settings-gear" onclick="openSettings()" title="Indstillinger">&#9881;</button>
+  </div>
+  <div class="stats-grid" id="statsGrid"></div>
+  <div class="legend-bar">
+    <div class="legend-item"><div class="legend-dot" style="background:#378ADD"></div>Lamper</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#1D9E75"></div>Kabler</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#BA7517"></div>Stativer</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#534AB7"></div>Styring</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#D85A30"></div>Grip</div>
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">&#128269;</span>
+    <input class="search-input" id="searchInput" type="text" placeholder="Søg udstyr..." oninput="renderList()">
+  </div>
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-btn active" data-cat="all" onclick="setFilter('all',this)">Alle</button>
+    <button class="filter-btn" data-cat="lamper" onclick="setFilter('lamper',this)">Lamper</button>
+    <button class="filter-btn" data-cat="kabler" onclick="setFilter('kabler',this)">Kabler</button>
+    <button class="filter-btn" data-cat="stativer" onclick="setFilter('stativer',this)">Stativer</button>
+    <button class="filter-btn" data-cat="styring" onclick="setFilter('styring',this)">Styring</button>
+    <button class="filter-btn" data-cat="grip" onclick="setFilter('grip',this)">Grip</button>
+  </div>
+  <div class="list" id="itemList"></div>
+  <div class="bottom-bar">
+    <button class="bar-btn primary" onclick="openPatch()">Patch</button>
+    <button class="bar-btn secondary" onclick="openPack()">Pakke</button>
+    <button class="bar-btn secondary" onclick="openPower()">Strøm</button>
+    <button class="bar-btn secondary" onclick="shareSummary()">Del</button>
+  </div>
+</div>
+<!-- Patch Modal -->
+<div class="modal-overlay" id="patchModal">
+<div class="modal">
+  <button class="modal-close" onclick="closeModal('patchModal')">&#10005;</button>
+  <h2>Patch Udtræk</h2>
+  <div id="patchContent"></div>
+</div>
+</div>
+<!-- Pack Modal -->
+<div class="modal-overlay" id="packModal">
+<div class="modal">
+  <button class="modal-close" onclick="closeModal('packModal')">&#10005;</button>
+  <h2>Pakkeliste</h2>
+  <div id="packContent"></div>
+  <button class="modal-print-btn" onclick="window.print()">Print pakkeliste</button>
+</div>
+</div>
+<!-- Power Modal -->
+<div class="modal-overlay" id="powerModal">
+<div class="modal">
+  <button class="modal-close" onclick="closeModal('powerModal')">&#10005;</button>
+  <h2>Strøm-oversigt</h2>
+  <div id="powerContent"></div>
+</div>
+</div>
+<!-- Settings Modal -->
+<div class="modal-overlay" id="settingsModal">
+<div class="modal">
+  <button class="modal-close" onclick="closeModal('settingsModal')">&#10005;</button>
+  <h2>Udstyr</h2>
+  <h3>Tilføj nyt udstyr</h3>
+  <div class="form-group"><label>Navn</label><input class="form-input" id="addName" placeholder="F.eks. Arri SkyPanel S60-C"></div>
+  <div class="form-group"><label>Kategori</label><select class="form-select" id="addCat" onchange="toggleAddFields()"><option value="lamper">Lamper</option><option value="kabler">Kabler</option><option value="stativer">Stativer</option><option value="styring">Styring</option><option value="grip">Grip</option></select></div>
+  <div class="form-group"><label>Antal</label><input class="form-input" id="addQty" type="number" min="1" value="1"></div>
+  <div id="addLampFields">
+    <div class="form-group"><label>Watt</label><input class="form-input" id="addWatt" type="number" placeholder="455"></div>
+    <div class="form-group"><label>DMX Univers</label><input class="form-input" id="addUni" type="number" min="1" value="1" placeholder="1"></div>
+    <div class="form-group"><label>DMX Startadresse</label><input class="form-input" id="addAddr" type="number" min="1" placeholder="1"></div>
+    <div class="form-group"><label>Antal kanaler</label><input class="form-input" id="addCh" type="number" min="1" placeholder="15"></div>
+  </div>
+  <button class="form-submit" onclick="addItem()">Tilføj udstyr</button>
+  <h3 style="margin-top:24px">Eksisterende udstyr</h3>
+  <div id="settingsList"></div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const CATS={lamper:'#378ADD',kabler:'#1D9E75',stativer:'#BA7517',styring:'#534AB7',grip:'#D85A30'};
+let items=[
+{id:1,cat:'lamper',fixture:'F01',name:'Arri SkyPanel S60-C',watts:455,dmx:{u:1,start:1,ch:15},kelvin:'2800-10000K',beam:'115°',deps:[{n:'Powercon TRUE1 10m',ok:true},{n:'C-Stand 40"',ok:true},{n:'Sandsæk 15kg',ok:true}]},
+{id:2,cat:'lamper',fixture:'F02',name:'Arri SkyPanel S30-C',watts:175,dmx:{u:1,start:16,ch:15},kelvin:'2800-10000K',beam:'115°',deps:[{n:'Powercon TRUE1 5m',ok:true},{n:'C-Stand 40"',ok:true},{n:'Sandsæk 15kg',ok:true}]},
+{id:3,cat:'lamper',fixture:'F03',name:'Aputure LS 600d Pro',watts:600,dmx:{u:1,start:31,ch:6},kelvin:'5600K',beam:'120°',deps:[{n:'Powercon TRUE1 10m',ok:true},{n:'Combo Stand',ok:true},{n:'Sandsæk 15kg',ok:false}]},
+{id:4,cat:'lamper',fixture:'F04',name:'Aputure LS 300X',watts:350,dmx:{u:1,start:37,ch:6},kelvin:'2700-6500K',beam:'120°',deps:[{n:'Powercon TRUE1 5m',ok:true},{n:'Baby Stand',ok:true},{n:'Sandsæk 15kg',ok:true}]},
+{id:5,cat:'lamper',fixture:'F05',name:'Astera Titan Tube x4',watts:72,dmx:{u:1,start:43,ch:80},kelvin:'1750-20000K',beam:'360°',deps:[{n:'Batteri internt',ok:true},{n:'Ophæng',ok:false},{n:'Sandsæk/sikring',ok:false}]},
+{id:6,cat:'lamper',fixture:'F06',name:'Kino Flo Celeb 450',watts:280,dmx:{u:1,start:123,ch:4},kelvin:'2700-6500K',beam:'120°',deps:[{n:'Powercon TRUE1 5m',ok:true},{n:'C-Stand 40"',ok:true},{n:'Sandsæk 15kg',ok:true}]},
+{id:7,cat:'lamper',fixture:'F07',name:'Creamsource Vortex8',watts:1200,dmx:{u:2,start:1,ch:23},kelvin:'2800-10000K',beam:'100°',deps:[{n:'CEE 32A 25m',ok:true},{n:'Combo Stand',ok:true},{n:'Sandsæk 15kg x2',ok:false}]},
+{id:8,cat:'lamper',fixture:'F08',name:'Litepanels Gemini 2x1',watts:200,dmx:{u:2,start:24,ch:8},kelvin:'2800-10000K',beam:'100°',deps:[{n:'Powercon TRUE1 5m',ok:true},{n:'C-Stand 40"',ok:true},{n:'Sandsæk 15kg',ok:true}]},
+{id:9,cat:'lamper',fixture:'F09',name:'Astera AX5 TriplePAR x6',watts:45,dmx:null,kelvin:'1750-20000K',beam:'21°',deps:[{n:'Batteri internt',ok:true},{n:'Low Boy Roller',ok:true}]},
+{id:10,cat:'lamper',fixture:'F10',name:'Arri Orbiter',watts:500,dmx:{u:2,start:32,ch:30},kelvin:'2800-10000K',beam:'variable',deps:[{n:'Powercon TRUE1 10m',ok:true},{n:'Combo Stand',ok:false},{n:'Sandsæk 15kg x2',ok:false}]},
+{id:11,cat:'lamper',fixture:'F11',name:'Nanlite Forza 500',watts:500,dmx:{u:2,start:62,ch:4},kelvin:'5600K',beam:'120°',deps:[{n:'Powercon TRUE1 5m',ok:true},{n:'Baby Stand',ok:true},{n:'Sandsæk 15kg',ok:true}]},
+{id:12,cat:'lamper',fixture:'F12',name:'Aputure MC x8',watts:5,dmx:null,kelvin:'2700-6500K',beam:'120°',deps:[{n:'USB-C lading',ok:true}]},
+{id:13,cat:'styring',name:'grandMA3 onPC + MA3 Node',desc:'2 universer',deps:[{n:'Powercon TRUE1 5m',ok:true}]},
+{id:14,cat:'styring',name:'Astera AsteraBox CRMX',desc:'Trådløs DMX',deps:[{n:'USB strøm',ok:true}]},
+{id:15,cat:'styring',name:'DMX splitter 1:8',desc:'Signal distribution',deps:[{n:'5-pin DMX 5m',ok:true}]},
+{id:16,cat:'kabler',name:'5-pin DMX 10m',qty:6},
+{id:17,cat:'kabler',name:'5-pin DMX 5m',qty:4},
+{id:18,cat:'kabler',name:'Powercon TRUE1 10m',qty:4},
+{id:19,cat:'kabler',name:'Powercon TRUE1 5m',qty:6},
+{id:20,cat:'kabler',name:'CEE 32A 25m',qty:2},
+{id:21,cat:'kabler',name:'Socapex 25m',qty:1},
+{id:22,cat:'kabler',name:'CEE 16A adaptere',qty:4},
+{id:23,cat:'stativer',name:'C-Stand 40" + arm + knuckle',qty:6},
+{id:24,cat:'stativer',name:'Combo Stand',qty:2},
+{id:25,cat:'stativer',name:'Low Boy Roller',qty:2},
+{id:26,cat:'stativer',name:'Baby Stand',qty:4},
+{id:27,cat:'stativer',name:'Autopole',qty:3},
+{id:28,cat:'grip',name:'Sandsæk 15kg',qty:12},
+{id:29,cat:'grip',name:'4x4 ramme + diff',qty:2},
+{id:30,cat:'grip',name:'Mafer tvinger',qty:8}
+];
+let nextId=31;
+let activeFilter='all';
+let openRowId=null;
+let editingDmxId=null;
+function getStats(){
+  let totalItems=items.length;
+  let missing=0;
+  items.forEach(function(it){if(it.deps)it.deps.forEach(function(d){if(!d.ok)missing++})});
+  let universes=new Set();
+  let dmxUsed={};
+  items.forEach(function(it){
+    if(it.dmx){
+      universes.add(it.dmx.u);
+      var u=it.dmx.u;
+      var end=it.dmx.start+it.dmx.ch-1;
+      if(!dmxUsed[u]||end>dmxUsed[u])dmxUsed[u]=end;
+    }
+  });
+  let uniCount=universes.size||0;
+  let totalCh=0;
+  for(var u in dmxUsed)totalCh+=dmxUsed[u];
+  return{totalItems:totalItems,missing:missing,uniCount:uniCount,totalCh:totalCh,totalSlots:uniCount*512,dmxUsed:dmxUsed};
+}
+function renderStats(){
+  var s=getStats();
+  document.getElementById('statsGrid').innerHTML=
+    '<div class="stat-card"><div class="val">'+s.totalItems+'</div><div class="lbl">Enheder</div></div>'+
+    '<div class="stat-card"><div class="val red">'+s.missing+'</div><div class="lbl">Mangler</div></div>'+
+    '<div class="stat-card"><div class="val">'+s.uniCount+'</div><div class="lbl">Universer</div></div>'+
+    '<div class="stat-card"><div class="val">'+s.totalCh+'<span style="font-size:13px;color:#888">/'+(s.totalSlots||0)+'</span></div><div class="lbl">DMX brugt</div></div>';
+}
+function setFilter(cat,btn){
+  activeFilter=cat;
+  document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  renderList();
+}
+function pad3(n){return String(n).padStart(3,'0')}
+function renderList(){
+  var q=document.getElementById('searchInput').value.toLowerCase();
+  var groups={lamper:[],styring:[],kabler:[],stativer:[],grip:[]};
+  items.forEach(function(it){
+    if(activeFilter!=='all'&&it.cat!==activeFilter)return;
+    if(q&&it.name.toLowerCase().indexOf(q)<0&&!(it.fixture&&it.fixture.toLowerCase().indexOf(q)>=0))return;
+    groups[it.cat].push(it);
+  });
+  var html='';
+  var catNames={lamper:'Lamper',styring:'Styring',kabler:'Kabler',stativer:'Stativer',grip:'Grip'};
+  var order=['lamper','styring','kabler','stativer','grip'];
+  for(var ci=0;ci<order.length;ci++){
+    var cat=order[ci];
+    var arr=groups[cat];
+    if(!arr.length)continue;
+    html+='<div class="section-label">'+catNames[cat]+'</div>';
+    for(var ai=0;ai<arr.length;ai++){
+      var it=arr[ai];
+      var isOpen=openRowId===it.id;
+      var color=CATS[it.cat];
+      var sub='';
+      if(it.cat==='lamper'){
+        sub=it.watts+'W';
+        if(it.dmx)sub+=' &middot; U'+it.dmx.u+':'+pad3(it.dmx.start);
+        else sub+=' &middot; Standalone';
+        if(it.kelvin)sub+=' &middot; '+it.kelvin;
+      }else if(it.cat==='styring'){
+        sub=it.desc||'';
+      }
+      var depDots='';
+      if(it.deps&&it.deps.length){
+        depDots='<div class="dep-dots">';
+        for(var di=0;di<it.deps.length;di++){
+          depDots+='<div class="dep-dot '+(it.deps[di].ok?'ok':'miss')+'"></div>';
+        }
+        depDots+='</div>';
+      }
+      var fixtureTag=it.fixture?'<span class="row-fixture">'+it.fixture+'</span>':'';
+      var dmxTag=it.dmx?'<span class="row-dmx">U'+it.dmx.u+':'+pad3(it.dmx.start)+'</span>':'';
+      var qtyTag=it.qty?'<span class="row-qty">x'+it.qty+'</span>':'';
+      html+='<div class="row'+(isOpen?' open':'')+'" data-id="'+it.id+'">'+
+        '<div class="row-head" onclick="toggleRow('+it.id+')">'+
+          '<div class="row-color" style="background:'+color+'"></div>'+
+          '<div class="row-info">'+
+            '<div class="row-name">'+fixtureTag+it.name+'</div>'+
+            '<div class="row-sub">'+sub+depDots+'</div>'+
+          '</div>'+
+          dmxTag+qtyTag+
+          '<div class="row-chevron">&#9656;</div>'+
+        '</div>'+
+        '<div class="detail">'+(isOpen?buildDetail(it):'')+'</div>'+
+      '</div>';
+    }
+  }
+  document.getElementById('itemList').innerHTML=html;
+}
+function buildDetail(it){
+  var html='';
+  if(it.cat==='lamper'){
+    html+='<div class="detail-specs">'+
+      '<div class="spec-card"><div class="spec-lbl">Watt</div><div class="spec-val">'+it.watts+'W</div></div>'+
+      '<div class="spec-card"><div class="spec-lbl">Farvetemperatur</div><div class="spec-val">'+(it.kelvin||'—')+'</div></div>'+
+      '<div class="spec-card"><div class="spec-lbl">Beam</div><div class="spec-val">'+(it.beam||'—')+'</div></div>'+
+      '<div class="spec-card"><div class="spec-lbl">DMX</div><div class="spec-val">'+(it.dmx?'U'+it.dmx.u+':'+pad3(it.dmx.start)+' ('+it.dmx.ch+'ch)':'Standalone')+'</div></div>'+
+    '</div>';
+  }else if(it.cat==='styring'){
+    html+='<div class="detail-specs"><div class="spec-card"><div class="spec-lbl">Funktion</div><div class="spec-val">'+(it.desc||'—')+'</div></div></div>';
+  }else{
+    html+='<div class="detail-specs"><div class="spec-card"><div class="spec-lbl">Antal</div><div class="spec-val">'+(it.qty||1)+'</div></div></div>';
+  }
+  if(it.deps&&it.deps.length){
+    html+='<div class="detail-deps"><h4>Afhængigheder</h4>';
+    for(var i=0;i<it.deps.length;i++){
+      var d=it.deps[i];
+      html+='<div class="dep-row"><div class="dep-circle '+(d.ok?'ok':'miss')+'">'+(d.ok?'&#10003;':'!')+'</div><span class="dep-label">'+d.n+' — '+(d.ok?'OK':'MANGLER')+'</span></div>';
+    }
+    html+='</div>';
+  }
+  if(it.cat==='lamper'&&editingDmxId===it.id){
+    html+='<div class="dmx-edit-form">'+
+      '<div class="form-group"><label>Rediger DMX-adresse</label></div>'+
+      '<div class="dmx-edit-row">'+
+        '<div class="form-group"><label>Univers</label><input class="form-input" id="editU" type="number" min="1" value="'+(it.dmx?it.dmx.u:1)+'"></div>'+
+        '<div class="form-group"><label>Start</label><input class="form-input" id="editStart" type="number" min="1" value="'+(it.dmx?it.dmx.start:1)+'"></div>'+
+        '<div class="form-group"><label>Kanaler</label><input class="form-input" id="editCh" type="number" min="1" value="'+(it.dmx?it.dmx.ch:1)+'"></div>'+
+      '</div>'+
+      '<div style="margin-top:8px"><button class="dmx-save" onclick="saveDmx('+it.id+')">Gem</button><button class="dmx-cancel" onclick="cancelDmx()">Annuller</button></div>'+
+    '</div>';
+  }
+  html+='<div class="detail-actions">';
+  if(it.cat==='lamper')html+='<button class="detail-btn edit" onclick="event.stopPropagation();editDmx('+it.id+')">Ret DMX</button>';
+  html+='<button class="detail-btn remove" onclick="event.stopPropagation();removeItem('+it.id+')">Fjern</button>';
+  html+='</div>';
+  return html;
+}
+function toggleRow(id){
+  if(openRowId===id){openRowId=null;editingDmxId=null;}
+  else{openRowId=id;editingDmxId=null;}
+  renderList();
+}
+function editDmx(id){editingDmxId=id;renderList()}
+function cancelDmx(){editingDmxId=null;renderList()}
+function saveDmx(id){
+  var it=items.find(function(i){return i.id===id});
+  if(!it)return;
+  var u=parseInt(document.getElementById('editU').value)||1;
+  var s=parseInt(document.getElementById('editStart').value)||1;
+  var c=parseInt(document.getElementById('editCh').value)||1;
+  it.dmx={u:u,start:s,ch:c};
+  editingDmxId=null;
+  renderStats();renderList();toast('DMX-adresse opdateret');
+}
+function removeItem(id){
+  if(!confirm('Fjern dette udstyr?'))return;
+  items=items.filter(function(i){return i.id!==id});
+  if(openRowId===id)openRowId=null;
+  renderStats();renderList();toast('Udstyr fjernet');
+}
+function openModal(id){document.getElementById(id).classList.add('show');document.body.style.overflow='hidden'}
+function closeModal(id){document.getElementById(id).classList.remove('show');document.body.style.overflow=''}
+function openPatch(){
+  var patched=items.filter(function(i){return i.dmx}).sort(function(a,b){return a.dmx.u-b.dmx.u||a.dmx.start-b.dmx.start});
+  var universes={};
+  patched.forEach(function(it){
+    if(!universes[it.dmx.u])universes[it.dmx.u]=[];
+    universes[it.dmx.u].push(it);
+  });
+  var html='';
+  var keys=Object.keys(universes).sort(function(a,b){return a-b});
+  for(var ki=0;ki<keys.length;ki++){
+    var u=keys[ki];
+    html+='<h3>Univers '+u+'</h3>'+
+    '<table class="patch-table"><tr><th>Fixture</th><th>Navn</th><th>Start</th><th>Slut</th><th>Ch</th></tr>';
+    var uItems=universes[u];
+    for(var i=0;i<uItems.length;i++){
+      var it=uItems[i];
+      var end=it.dmx.start+it.dmx.ch-1;
+      html+='<tr><td class="fixture-col">'+(it.fixture||'—')+'</td><td>'+it.name+'</td><td>'+it.dmx.start+'</td><td>'+end+'</td><td>'+it.dmx.ch+'</td></tr>';
+    }
+    html+='</table>';
+  }
+  document.getElementById('patchContent').innerHTML=html;
+  openModal('patchModal');
+}
+function openPack(){
+  var catNames={lamper:'Lamper',kabler:'Kabler',stativer:'Stativer',styring:'Styring',grip:'Grip'};
+  var order=['lamper','styring','kabler','stativer','grip'];
+  var html='';
+  for(var ci=0;ci<order.length;ci++){
+    var cat=order[ci];
+    var arr=items.filter(function(i){return i.cat===cat});
+    if(!arr.length)continue;
+    html+='<h3 style="color:'+CATS[cat]+'">'+catNames[cat]+'</h3>';
+    for(var i=0;i<arr.length;i++){
+      var it=arr[i];
+      var q=it.qty||1;
+      html+='<div class="pack-item"><div class="pack-dot" style="background:'+CATS[it.cat]+'"></div><span class="pack-name">'+(it.fixture?it.fixture+' — ':'')+it.name+'</span><span class="pack-qty">x'+q+'</span></div>';
+    }
+  }
+  document.getElementById('packContent').innerHTML=html;
+  openModal('packModal');
+}
+function openPower(){
+  var lamps=items.filter(function(i){return i.cat==='lamper'});
+  var totalW=0;
+  var rows='';
+  for(var i=0;i<lamps.length;i++){
+    var it=lamps[i];
+    var w=it.watts*(it.qty||1);
+    totalW+=w;
+    rows+='<div class="power-row"><span class="power-name">'+(it.fixture?it.fixture+' ':'')+it.name+'</span><span class="power-val">'+w+'W</span></div>';
+  }
+  var amps=(totalW/230).toFixed(1);
+  var html='<div class="power-total"><div class="big">'+totalW+'W</div><div class="sub">'+amps+'A @ 230V enfase</div></div>'+
+    '<h3>Per armatur</h3>'+rows;
+  document.getElementById('powerContent').innerHTML=html;
+  openModal('powerModal');
+}
+function shareSummary(){
+  var s=getStats();
+  var txt='Light Crew — Fiktionsproduktion\nLocation 1 — Studie A\n\n';
+  txt+='Enheder: '+s.totalItems+' | Mangler: '+s.missing+' | Universer: '+s.uniCount+' | DMX: '+s.totalCh+'/'+s.totalSlots+'\n\n';
+  var catNames={lamper:'LAMPER',styring:'STYRING',kabler:'KABLER',stativer:'STATIVER',grip:'GRIP'};
+  var order=['lamper','styring','kabler','stativer','grip'];
+  for(var ci=0;ci<order.length;ci++){
+    var cat=order[ci];
+    var arr=items.filter(function(i){return i.cat===cat});
+    if(!arr.length)continue;
+    txt+='--- '+catNames[cat]+' ---\n';
+    for(var i=0;i<arr.length;i++){
+      var it=arr[i];
+      var line=it.fixture?it.fixture+' ':'';
+      line+=it.name;
+      if(it.qty)line+=' x'+it.qty;
+      if(it.watts)line+=' ('+it.watts+'W)';
+      if(it.dmx)line+=' [U'+it.dmx.u+':'+pad3(it.dmx.start)+']';
+      txt+=line+'\n';
+    }
+    txt+='\n';
+  }
+  navigator.clipboard.writeText(txt).then(function(){toast('Kopieret til udklipsholder')});
+}
+function toast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show')},2000);
+}
+function openSettings(){
+  renderSettingsList();
+  openModal('settingsModal');
+}
+function toggleAddFields(){
+  var cat=document.getElementById('addCat').value;
+  document.getElementById('addLampFields').style.display=cat==='lamper'?'block':'none';
+}
+function renderSettingsList(){
+  var html='';
+  for(var i=0;i<items.length;i++){
+    var it=items[i];
+    html+='<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1a1a24">'+
+      '<div style="display:flex;align-items:center;gap:8px">'+
+        '<div style="width:8px;height:8px;border-radius:50%;background:'+CATS[it.cat]+'"></div>'+
+        '<span style="font-size:12px;color:#ccc;font-weight:400">'+(it.fixture?it.fixture+' — ':'')+it.name+(it.qty?' x'+it.qty:'')+'</span>'+
+      '</div>'+
+      '<button onclick="removeItemFromSettings('+it.id+')" style="background:#3a1a1a;color:#f87171;border:none;border-radius:6px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;font-family:Tahoma">Slet</button>'+
+    '</div>';
+  }
+  document.getElementById('settingsList').innerHTML=html;
+}
+function removeItemFromSettings(id){
+  if(!confirm('Fjern dette udstyr?'))return;
+  items=items.filter(function(i){return i.id!==id});
+  if(openRowId===id)openRowId=null;
+  renderStats();renderList();renderSettingsList();toast('Udstyr fjernet');
+}
+function addItem(){
+  var name=document.getElementById('addName').value.trim();
+  if(!name){toast('Indtast et navn');return}
+  var cat=document.getElementById('addCat').value;
+  var qty=parseInt(document.getElementById('addQty').value)||1;
+  var item={id:nextId++,cat:cat,name:name};
+  if(cat!=='lamper'){
+    item.qty=qty;
+  }else{
+    item.watts=parseInt(document.getElementById('addWatt').value)||0;
+    var u=parseInt(document.getElementById('addUni').value)||0;
+    var addr=parseInt(document.getElementById('addAddr').value)||0;
+    var ch=parseInt(document.getElementById('addCh').value)||0;
+    if(u&&addr&&ch){
+      item.dmx={u:u,start:addr,ch:ch};
+    }
+    var lampCount=items.filter(function(i){return i.cat==='lamper'}).length;
+    item.fixture='F'+String(lampCount+1).padStart(2,'0');
+    item.deps=[];
+  }
+  items.push(item);
+  renderStats();renderList();renderSettingsList();
+  document.getElementById('addName').value='';
+  document.getElementById('addQty').value='1';
+  document.getElementById('addWatt').value='';
+  document.getElementById('addUni').value='1';
+  document.getElementById('addAddr').value='';
+  document.getElementById('addCh').value='';
+  toast('Udstyr tilføjet');
+}
+renderStats();
+renderList();
+</script>
+</body>
+</html>
