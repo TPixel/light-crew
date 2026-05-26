@@ -50,19 +50,17 @@ body{background:#000;font-family:Tahoma,sans-serif;font-weight:700;color:#fff;di
 .row.cat-styring .row-accent{background:#534AB7}
 .row.cat-grip .row-accent{background:#D85A30}
 
-.row-head{display:flex;align-items:center;padding:12px 12px 12px 18px;cursor:pointer;gap:10px;min-height:60px}
-.id-block{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-width:74px;flex-shrink:0;line-height:1;gap:4px}
-.row-num{font-size:21px;letter-spacing:-0.5px;font-weight:700;color:#fff;text-align:left;line-height:1}
-.row-info{flex:1;min-width:0;text-align:left}
-.row-name{font-size:14px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700;letter-spacing:.2px}
-.row-sub{font-size:10px;color:#888;font-weight:700;margin-top:3px;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.row-right{display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;line-height:1}
-.row-uni{display:none}
-.row-dmx{font-size:13px;color:#fff;font-weight:700;letter-spacing:0.5px;line-height:1.1}
-.row-dmx.muted{color:#555;font-size:13px}
-.row-dmx.crmx-name{font-size:13px;color:#fff;font-weight:700;letter-spacing:0.5px;line-height:1.15;text-align:left;max-width:74px;white-space:normal;word-break:break-word}
-.row-qty{font-size:18px;font-weight:700;color:#fff;letter-spacing:-0.5px;line-height:1}
-.row-chevron{color:#555;font-size:12px;transition:transform .2s;margin-left:4px}
+.row-head{display:flex;align-items:flex-start;padding:14px 14px 14px 22px;cursor:pointer;gap:10px;min-height:60px;position:relative}
+.row-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.row-id-line{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;line-height:1}
+.row-num{font-size:25px;letter-spacing:-0.5px;font-weight:700;color:#fff;line-height:1.05}
+.row-num.crmx-name{font-size:21px;letter-spacing:0.3px;color:#fff;font-weight:700;line-height:1.1;word-break:break-word}
+.row-num.dmx{font-size:25px;letter-spacing:0.5px;color:#fff;font-weight:700;line-height:1.05}
+.row-num.qty{font-size:25px;letter-spacing:-0.5px;color:#fff;font-weight:700;line-height:1.05}
+.row-name{font-size:16px;color:#fff;font-weight:700;letter-spacing:.2px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row-sub{font-size:12px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:1px;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row-dep-line{margin-top:2px}
+.row-chevron{color:#555;font-size:12px;transition:transform .2s;position:absolute;top:14px;right:14px}
 .row.open .row-chevron{transform:rotate(90deg)}
 
 .dep-dots{display:inline-flex;gap:4px;margin-left:8px;vertical-align:middle}
@@ -459,37 +457,33 @@ function renderList(){
         if(it.standalone)sub+=' '+standaloneBadge;
       }
 
-      // Build left id-block: fixture number + DMX/CRMX grouped together
-      var leftBlock='';
+      // Build TOP ID LINE — fixture # and DMX/CRMX side-by-side, BOTH big white
+      var idLine='';
       if(it.cat==='lamper'){
         var num=it.fixture?'#'+it.fixture.replace(/^F/,''):'#';
-        var dmxLine='';
+        idLine+='<span class="row-num">'+num+'</span>';
         if(it.dmx){
-          dmxLine='<div class="row-dmx">U'+it.dmx.u+':'+pad3(it.dmx.start)+'</div>';
+          idLine+='<span class="row-num dmx">U'+it.dmx.u+':'+pad3(it.dmx.start)+'</span>';
         }else if(it.crmxUnit){
-          dmxLine='<div class="row-dmx crmx-name">'+escapeHtml(it.crmxUnit)+'</div>';
+          idLine+='<span class="row-num crmx-name">'+escapeHtml(it.crmxUnit)+'</span>';
         }
-        leftBlock='<div class="id-block"><div class="row-num">'+num+'</div>'+dmxLine+'</div>';
       }else if(it.cat==='styring'){
-        leftBlock='<div class="id-block"><div class="row-num" style="font-size:18px">&#9632;</div></div>';
+        idLine+='<span class="row-num">&#9632;</span>';
       }else{
-        leftBlock='<div class="id-block"><div class="row-qty">x'+(it.qty||1)+'</div></div>';
+        idLine+='<span class="row-num qty">x'+(it.qty||1)+'</span>';
       }
-
-      // Right block removed — DMX moved to left block. Keep empty placeholder.
-      var rightBlock='';
 
       var nameLine=escapeHtml(it.name);
 
       html+='<div class="row cat-'+it.cat+(isOpen?' open':'')+'" data-id="'+it.id+'">'+
         '<div class="row-accent"></div>'+
         '<div class="row-head" onclick="toggleRow('+it.id+')">'+
-          leftBlock+
-          '<div class="row-info">'+
+          '<div class="row-body">'+
+            '<div class="row-id-line">'+idLine+'</div>'+
             '<div class="row-name">'+nameLine+'</div>'+
-            '<div class="row-sub">'+sub+depDots+'</div>'+
+            '<div class="row-sub">'+sub+'</div>'+
+            (depDots?'<div class="row-dep-line">'+depDots+'</div>':'')+
           '</div>'+
-          rightBlock+
           '<div class="row-chevron">&#9656;</div>'+
         '</div>'+
         '<div class="detail">'+(isOpen?buildDetail(it):'')+'</div>'+
