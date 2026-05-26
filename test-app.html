@@ -62,8 +62,10 @@ body{background:#000;font-family:Tahoma,sans-serif;font-weight:700;color:#fff;di
 .row-sub{font-size:10px;color:#888;font-weight:700;margin-top:3px;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .row-right{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:54px;flex-shrink:0;line-height:1}
 .row-uni{font-size:10px;color:#7C6AF7;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:2px}
+.row-uni.crmx{font-size:10px;letter-spacing:1px}
 .row-dmx{font-size:22px;color:#7C6AF7;font-weight:700;letter-spacing:-0.5px}
 .row-dmx.muted{color:#555;font-size:14px}
+.row-dmx.crmx-name{font-size:14px;color:#7C6AF7;line-height:1.1;text-align:center;max-width:84px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .row-qty{font-size:22px;font-weight:700;letter-spacing:-0.5px;line-height:1}
 .row.cat-kabler .row-qty{color:#1D9E75}
 .row.cat-stativer .row-qty{color:#BA7517}
@@ -77,12 +79,16 @@ body{background:#000;font-family:Tahoma,sans-serif;font-weight:700;color:#fff;di
 .dep-dot.ok{background:#4ade80}
 .dep-dot.miss{background:#f87171}
 
+.standalone-badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:9px;text-transform:uppercase;letter-spacing:1px;background:rgba(74,222,128,0.15);color:#4ade80;border:1px solid rgba(74,222,128,0.3);margin-left:6px;font-weight:700;vertical-align:middle;line-height:1.2}
+
 .detail{display:none;padding:0 14px 14px 18px}
 .row.open .detail{display:block}
 .detail-specs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
 .spec-card{background:rgba(0,0,0,.28);border-radius:8px;padding:8px}
 .spec-card .spec-lbl{font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.5px;font-weight:700}
 .spec-card .spec-val{font-size:13px;color:#fff;margin-top:2px;font-weight:700}
+.spec-card .spec-val.green{color:#4ade80}
+.spec-card .spec-val.dim{color:#888}
 .detail-deps{margin-bottom:10px}
 .detail-deps h4{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:700}
 .dep-row{display:flex;align-items:center;gap:8px;margin-bottom:4px}
@@ -90,10 +96,11 @@ body{background:#000;font-family:Tahoma,sans-serif;font-weight:700;color:#fff;di
 .dep-circle.ok{background:#1a3a1a;color:#4ade80}
 .dep-circle.miss{background:#3a1a1a;color:#f87171}
 .dep-label{font-size:11px;color:#ccc;font-weight:700}
-.detail-actions{display:flex;gap:6px;margin-top:8px}
-.detail-btn{flex:1;padding:8px;border-radius:8px;border:none;font-family:Tahoma,sans-serif;font-size:11px;font-weight:700;cursor:pointer;text-align:center}
+.detail-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.detail-btn{flex:1;padding:8px;border-radius:8px;border:none;font-family:Tahoma,sans-serif;font-size:11px;font-weight:700;cursor:pointer;text-align:center;min-width:80px}
 .detail-btn.edit{background:#7C6AF7;color:#fff}
 .detail-btn.placering{background:#23232f;color:#bdb4ff;border:1px solid #3a3a48}
+.detail-btn.standalone{background:#23232f;color:#4ade80;border:1px solid rgba(74,222,128,0.3)}
 .detail-btn.remove{background:#3a1a1a;color:#f87171}
 
 /* ============ BOTTOM BAR ============ */
@@ -148,6 +155,9 @@ body{background:#000;font-family:Tahoma,sans-serif;font-weight:700;color:#fff;di
 .form-select{appearance:none;-webkit-appearance:none}
 .form-submit{width:100%;padding:12px;background:#7C6AF7;color:#fff;border:none;border-radius:10px;font-family:Tahoma,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:8px}
 .form-cancel{width:100%;padding:12px;background:#1a1a24;color:#888;border:1px solid #2a2a36;border-radius:10px;font-family:Tahoma,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:6px}
+.form-check{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#1a1a24;border:1px solid #2a2a36;border-radius:8px;cursor:pointer}
+.form-check input{width:16px;height:16px;cursor:pointer;accent-color:#4ade80;flex-shrink:0}
+.form-check span{font-size:12px;color:#ccc;font-weight:700;letter-spacing:.3px}
 
 .dmx-edit-form{background:rgba(0,0,0,.28);border-radius:8px;padding:10px;margin-top:8px}
 .dmx-edit-form .form-group{margin-bottom:8px}
@@ -155,6 +165,9 @@ body{background:#000;font-family:Tahoma,sans-serif;font-weight:700;color:#fff;di
 .dmx-edit-row .form-input{padding:8px}
 .dmx-save{padding:8px 16px;background:#7C6AF7;color:#fff;border:none;border-radius:8px;font-family:Tahoma,sans-serif;font-size:11px;font-weight:700;cursor:pointer}
 .dmx-cancel{padding:8px 16px;background:#1a1a24;color:#888;border:1px solid #2a2a36;border-radius:8px;font-family:Tahoma,sans-serif;font-size:11px;font-weight:700;cursor:pointer;margin-left:6px}
+.dmx-type-row{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.dmx-type-btn{flex:1;min-width:60px;padding:8px 6px;background:#1a1a24;border:1px solid #2a2a36;border-radius:8px;color:#888;font-family:Tahoma,sans-serif;font-size:11px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.5px}
+.dmx-type-btn.active{background:#7C6AF7;border-color:#7C6AF7;color:#fff}
 @media print{
 body{background:#fff!important}
 .phone{background:#fff!important;max-width:100%!important;border-radius:0!important}
@@ -267,9 +280,25 @@ body{background:#fff!important}
   <div id="addLampFields">
     <div class="form-group"><label>Watt</label><input class="form-input" id="addWatt" type="number" placeholder="455"></div>
     <div class="form-group"><label>Placering</label><input class="form-input" id="addPlacering" placeholder="F.eks. RIG OVER"></div>
-    <div class="form-group"><label>DMX Univers</label><input class="form-input" id="addUni" type="number" min="1" value="1" placeholder="1"></div>
-    <div class="form-group"><label>DMX Startadresse</label><input class="form-input" id="addAddr" type="number" min="1" placeholder="1"></div>
-    <div class="form-group"><label>Antal kanaler</label><input class="form-input" id="addCh" type="number" min="1" placeholder="15"></div>
+    <div class="form-group">
+      <label>DMX-type</label>
+      <div class="dmx-type-row" id="addDmxType">
+        <button type="button" class="dmx-type-btn active" data-type="wired" onclick="setAddDmxType('wired')">Wired DMX</button>
+        <button type="button" class="dmx-type-btn" data-type="crmx" onclick="setAddDmxType('crmx')">CRMX Unit</button>
+        <button type="button" class="dmx-type-btn" data-type="none" onclick="setAddDmxType('none')">Ingen</button>
+      </div>
+    </div>
+    <div id="addWiredFields">
+      <div class="form-group"><label>DMX Univers</label><input class="form-input" id="addUni" type="number" min="1" value="1" placeholder="1"></div>
+      <div class="form-group"><label>DMX Startadresse</label><input class="form-input" id="addAddr" type="number" min="1" placeholder="1"></div>
+      <div class="form-group"><label>Antal kanaler</label><input class="form-input" id="addCh" type="number" min="1" placeholder="15"></div>
+    </div>
+    <div id="addCrmxFields" style="display:none">
+      <div class="form-group"><label>CRMX Unit navn</label><input class="form-input" id="addCrmxUnit" placeholder="F.eks. Moonlight #4"></div>
+    </div>
+  </div>
+  <div class="form-group" style="margin-top:6px">
+    <label class="form-check"><input type="checkbox" id="addStandalone"><span>Standalone (ingen kabler/stativer/sandsække nødvendige)</span></label>
   </div>
   <button class="form-submit" onclick="addItem()">Tilføj udstyr</button>
   <h3 style="margin-top:24px">Eksisterende udstyr</h3>
@@ -280,47 +309,53 @@ body{background:#fff!important}
 <script>
 const CATS={lamper:'#378ADD',kabler:'#1D9E75',stativer:'#BA7517',styring:'#534AB7',grip:'#D85A30'};
 let items=[
-{id:1,cat:'lamper',fixture:'F01',name:'Arri SkyPanel S60-C',watts:455,placering:'RIG OVER',dmx:{u:1,start:1,ch:15},kelvin:'2800-10000K',beam:'115°',deps:[{n:'Powercon TRUE1 10m',ok:true},{n:'C-Stand 40"',ok:true},{n:'Sandsæk 15kg',ok:true}]},
-{id:2,cat:'lamper',fixture:'F02',name:'Arri SkyPanel S30-C',watts:175,placering:'RIG SIDE',dmx:{u:1,start:16,ch:15},kelvin:'2800-10000K',beam:'115°',deps:[{n:'Powercon TRUE1 5m',ok:true},{n:'C-Stand 40"',ok:true},{n:'Sandsæk 15kg',ok:true}]},
-{id:3,cat:'lamper',fixture:'F03',name:'Aputure LS 600d Pro',watts:600,placering:'GULV KEY',dmx:{u:1,start:31,ch:6},kelvin:'5600K',beam:'120°',deps:[{n:'Powercon TRUE1 10m',ok:true},{n:'Combo Stand',ok:true},{n:'Sandsæk 15kg',ok:false}]},
-{id:4,cat:'lamper',fixture:'F04',name:'Aputure LS 300X',watts:350,placering:'GULV BACK',dmx:{u:1,start:37,ch:6},kelvin:'2700-6500K',beam:'120°',deps:[{n:'Powercon TRUE1 5m',ok:true},{n:'Baby Stand',ok:true},{n:'Sandsæk 15kg',ok:true}]},
-{id:5,cat:'lamper',fixture:'F05',name:'Astera Titan Tube x4',watts:72,placering:'PRACTICAL',dmx:{u:1,start:43,ch:80},kelvin:'1750-20000K',beam:'360°',deps:[{n:'Batteri internt',ok:true},{n:'Ophæng',ok:false},{n:'Sandsæk/sikring',ok:false}]},
-{id:6,cat:'lamper',fixture:'F06',name:'Kino Flo Celeb 450',watts:280,placering:'RIG OVER',dmx:{u:1,start:123,ch:4},kelvin:'2700-6500K',beam:'120°',deps:[{n:'Powercon TRUE1 5m',ok:true},{n:'C-Stand 40"',ok:true},{n:'Sandsæk 15kg',ok:true}]},
-{id:7,cat:'lamper',fixture:'F07',name:'Creamsource Vortex8',watts:1200,placering:'GULV KEY',dmx:{u:2,start:1,ch:23},kelvin:'2800-10000K',beam:'100°',deps:[{n:'CEE 32A 25m',ok:true},{n:'Combo Stand',ok:true},{n:'Sandsæk 15kg x2',ok:false}]},
-{id:8,cat:'lamper',fixture:'F08',name:'Litepanels Gemini 2x1',watts:200,placering:'RIG SIDE',dmx:{u:2,start:24,ch:8},kelvin:'2800-10000K',beam:'100°',deps:[{n:'Powercon TRUE1 5m',ok:true},{n:'C-Stand 40"',ok:true},{n:'Sandsæk 15kg',ok:true}]},
-{id:9,cat:'lamper',fixture:'F09',name:'Astera AX5 TriplePAR x6',watts:45,placering:'GULV ACCENT',dmx:null,kelvin:'1750-20000K',beam:'21°',deps:[{n:'Batteri internt',ok:true},{n:'Low Boy Roller',ok:true}]},
-{id:10,cat:'lamper',fixture:'F10',name:'Arri Orbiter',watts:500,placering:'RIG OVER',dmx:{u:2,start:32,ch:30},kelvin:'2800-10000K',beam:'variable',deps:[{n:'Powercon TRUE1 10m',ok:true},{n:'Combo Stand',ok:false},{n:'Sandsæk 15kg x2',ok:false}]},
-{id:11,cat:'lamper',fixture:'F11',name:'Nanlite Forza 500',watts:500,placering:'GULV FILL',dmx:{u:2,start:62,ch:4},kelvin:'5600K',beam:'120°',deps:[{n:'Powercon TRUE1 5m',ok:true},{n:'Baby Stand',ok:true},{n:'Sandsæk 15kg',ok:true}]},
-{id:12,cat:'lamper',fixture:'F12',name:'Aputure MC x8',watts:5,placering:'PRACTICAL',dmx:null,kelvin:'2700-6500K',beam:'120°',deps:[{n:'USB-C lading',ok:true}]},
-{id:13,cat:'styring',name:'grandMA3 onPC + MA3 Node',desc:'2 universer',deps:[{n:'Powercon TRUE1 5m',ok:true}]},
-{id:14,cat:'styring',name:'Astera AsteraBox CRMX',desc:'Trådløs DMX',deps:[{n:'USB strøm',ok:true}]},
-{id:15,cat:'styring',name:'DMX splitter 1:8',desc:'Signal distribution',deps:[{n:'5-pin DMX 5m',ok:true}]},
-{id:16,cat:'kabler',name:'5-pin DMX 10m',qty:6},
-{id:17,cat:'kabler',name:'5-pin DMX 5m',qty:4},
-{id:18,cat:'kabler',name:'Powercon TRUE1 10m',qty:4},
-{id:19,cat:'kabler',name:'Powercon TRUE1 5m',qty:6},
-{id:20,cat:'kabler',name:'CEE 32A 25m',qty:2},
-{id:21,cat:'kabler',name:'Socapex 25m',qty:1},
-{id:22,cat:'kabler',name:'CEE 16A adaptere',qty:4},
-{id:23,cat:'stativer',name:'C-Stand 40" + arm + knuckle',qty:6},
-{id:24,cat:'stativer',name:'Combo Stand',qty:2},
-{id:25,cat:'stativer',name:'Low Boy Roller',qty:2},
-{id:26,cat:'stativer',name:'Baby Stand',qty:4},
-{id:27,cat:'stativer',name:'Autopole',qty:3},
-{id:28,cat:'grip',name:'Sandsæk 15kg',qty:12},
-{id:29,cat:'grip',name:'4x4 ramme + diff',qty:2},
-{id:30,cat:'grip',name:'Mafer tvinger',qty:8}
+{id:1,cat:'lamper',fixture:'F01',name:'Arri SkyPanel S60-C',watts:455,placering:'RIG OVER',dmx:{u:1,start:1,ch:15},kelvin:'2800-10000K',beam:'115°',standalone:false,deps:[{n:'Powercon TRUE1 10m',ok:true},{n:'C-Stand 40"',ok:true},{n:'Sandsæk 15kg',ok:true}]},
+{id:2,cat:'lamper',fixture:'F02',name:'Arri SkyPanel S30-C',watts:175,placering:'RIG SIDE',dmx:{u:1,start:16,ch:15},kelvin:'2800-10000K',beam:'115°',standalone:false,deps:[{n:'Powercon TRUE1 5m',ok:true},{n:'C-Stand 40"',ok:true},{n:'Sandsæk 15kg',ok:true}]},
+{id:3,cat:'lamper',fixture:'F03',name:'Aputure LS 600d Pro',watts:600,placering:'GULV KEY',dmx:{u:1,start:31,ch:6},kelvin:'5600K',beam:'120°',standalone:false,deps:[{n:'Powercon TRUE1 10m',ok:true},{n:'Combo Stand',ok:true},{n:'Sandsæk 15kg',ok:false}]},
+{id:4,cat:'lamper',fixture:'F04',name:'Aputure LS 300X',watts:350,placering:'GULV BACK',dmx:{u:1,start:37,ch:6},kelvin:'2700-6500K',beam:'120°',standalone:false,deps:[{n:'Powercon TRUE1 5m',ok:true},{n:'Baby Stand',ok:true},{n:'Sandsæk 15kg',ok:true}]},
+{id:5,cat:'lamper',fixture:'F05',name:'Astera Titan Tube x4',watts:72,placering:'PRACTICAL',dmx:{u:1,start:43,ch:80},kelvin:'1750-20000K',beam:'360°',standalone:false,deps:[{n:'Batteri internt',ok:true},{n:'Ophæng',ok:false},{n:'Sandsæk/sikring',ok:false}]},
+{id:6,cat:'lamper',fixture:'F06',name:'Kino Flo Celeb 450',watts:280,placering:'RIG OVER',dmx:{u:1,start:123,ch:4},kelvin:'2700-6500K',beam:'120°',standalone:false,deps:[{n:'Powercon TRUE1 5m',ok:true},{n:'C-Stand 40"',ok:true},{n:'Sandsæk 15kg',ok:true}]},
+{id:7,cat:'lamper',fixture:'F07',name:'Creamsource Vortex8',watts:1200,placering:'GULV KEY',dmx:{u:2,start:1,ch:23},kelvin:'2800-10000K',beam:'100°',standalone:false,deps:[{n:'CEE 32A 25m',ok:true},{n:'Combo Stand',ok:true},{n:'Sandsæk 15kg x2',ok:false}]},
+{id:8,cat:'lamper',fixture:'F08',name:'Litepanels Gemini 2x1',watts:200,placering:'RIG SIDE',dmx:{u:2,start:24,ch:8},kelvin:'2800-10000K',beam:'100°',standalone:false,deps:[{n:'Powercon TRUE1 5m',ok:true},{n:'C-Stand 40"',ok:true},{n:'Sandsæk 15kg',ok:true}]},
+{id:9,cat:'lamper',fixture:'F09',name:'Astera AX5 TriplePAR x6',watts:45,placering:'GULV ACCENT',dmx:null,crmxUnit:'Moonlight #4',kelvin:'1750-20000K',beam:'21°',standalone:false,deps:[{n:'Batteri internt',ok:true},{n:'Low Boy Roller',ok:true}]},
+{id:10,cat:'lamper',fixture:'F10',name:'Arri Orbiter',watts:500,placering:'RIG OVER',dmx:{u:2,start:32,ch:30},kelvin:'2800-10000K',beam:'variable',standalone:false,deps:[{n:'Powercon TRUE1 10m',ok:true},{n:'Combo Stand',ok:false},{n:'Sandsæk 15kg x2',ok:false}]},
+{id:11,cat:'lamper',fixture:'F11',name:'Nanlite Forza 500',watts:500,placering:'GULV FILL',dmx:{u:2,start:62,ch:4},kelvin:'5600K',beam:'120°',standalone:false,deps:[{n:'Powercon TRUE1 5m',ok:true},{n:'Baby Stand',ok:true},{n:'Sandsæk 15kg',ok:true}]},
+{id:12,cat:'lamper',fixture:'F12',name:'Aputure MC x8',watts:5,placering:'PRACTICAL',dmx:null,crmxUnit:'Node #1',kelvin:'2700-6500K',beam:'120°',standalone:true,deps:[{n:'USB-C lading',ok:true}]},
+{id:13,cat:'styring',name:'grandMA3 onPC + MA3 Node',desc:'2 universer',standalone:false,deps:[{n:'Powercon TRUE1 5m',ok:true}]},
+{id:14,cat:'styring',name:'Astera AsteraBox CRMX',desc:'Trådløs DMX',standalone:false,deps:[{n:'USB strøm',ok:true}]},
+{id:15,cat:'styring',name:'DMX splitter 1:8',desc:'Signal distribution',standalone:false,deps:[{n:'5-pin DMX 5m',ok:true}]},
+{id:16,cat:'kabler',name:'5-pin DMX 10m',qty:6,standalone:false},
+{id:17,cat:'kabler',name:'5-pin DMX 5m',qty:4,standalone:false},
+{id:18,cat:'kabler',name:'Powercon TRUE1 10m',qty:4,standalone:false},
+{id:19,cat:'kabler',name:'Powercon TRUE1 5m',qty:6,standalone:false},
+{id:20,cat:'kabler',name:'CEE 32A 25m',qty:2,standalone:false},
+{id:21,cat:'kabler',name:'Socapex 25m',qty:1,standalone:false},
+{id:22,cat:'kabler',name:'CEE 16A adaptere',qty:4,standalone:false},
+{id:23,cat:'stativer',name:'C-Stand 40" + arm + knuckle',qty:6,standalone:false},
+{id:24,cat:'stativer',name:'Combo Stand',qty:2,standalone:false},
+{id:25,cat:'stativer',name:'Low Boy Roller',qty:2,standalone:false},
+{id:26,cat:'stativer',name:'Baby Stand',qty:4,standalone:false},
+{id:27,cat:'stativer',name:'Autopole',qty:3,standalone:false},
+{id:28,cat:'grip',name:'Sandsæk 15kg',qty:12,standalone:false},
+{id:29,cat:'grip',name:'4x4 ramme + diff',qty:2,standalone:false},
+{id:30,cat:'grip',name:'Mafer tvinger',qty:8,standalone:false}
 ];
 let nextId=31;
 let activeFilter='all';
 let openRowId=null;
 let editingDmxId=null;
 let editingPlaceringId=null;
+let addDmxType='wired';
+
+function escapeHtml(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
 function getStats(){
   let totalItems=items.length;
   let missing=0;
-  items.forEach(function(it){if(it.deps)it.deps.forEach(function(d){if(!d.ok)missing++})});
+  items.forEach(function(it){
+    if(it.standalone)return; // standalone items don't count missing deps
+    if(it.deps)it.deps.forEach(function(d){if(!d.ok)missing++});
+  });
   let universes=new Set();
   let dmxUsed={};
   items.forEach(function(it){
@@ -369,6 +404,24 @@ function openSearch(){openModal('searchModal');setTimeout(function(){var i=docum
 function closeSearch(){closeModal('searchModal');renderIndikator();}
 function pad3(n){return String(n).padStart(3,'0')}
 
+function buildDepDots(it){
+  if(!it.deps||!it.deps.length)return '';
+  // For standalone items: nothing is missing — show one green dot (or all green for multi-dep)
+  if(it.standalone){
+    if(it.deps.length<=1)return '<span class="dep-dots"><span class="dep-dot ok"></span></span>';
+    var html='<span class="dep-dots">';
+    for(var i=0;i<it.deps.length;i++)html+='<span class="dep-dot ok"></span>';
+    html+='</span>';
+    return html;
+  }
+  var html='<span class="dep-dots">';
+  for(var i=0;i<it.deps.length;i++){
+    html+='<span class="dep-dot '+(it.deps[i].ok?'ok':'miss')+'"></span>';
+  }
+  html+='</span>';
+  return html;
+}
+
 function renderList(){
   var q=(document.getElementById('searchInput')||{value:''}).value.toLowerCase();
   var groups={lamper:[],styring:[],kabler:[],stativer:[],grip:[]};
@@ -389,29 +442,30 @@ function renderList(){
       var it=arr[ai];
       var isOpen=openRowId===it.id;
 
-      // Build dep dots (subtle, inline with subtitle)
-      var depDots='';
-      if(it.deps&&it.deps.length){
-        depDots='<span class="dep-dots">';
-        for(var di=0;di<it.deps.length;di++){
-          depDots+='<span class="dep-dot '+(it.deps[di].ok?'ok':'miss')+'"></span>';
-        }
-        depDots+='</span>';
-      }
+      // dep dots
+      var depDots=buildDepDots(it);
+
+      // Standalone badge
+      var standaloneBadge=it.standalone?'<span class="standalone-badge">STANDALONE</span>':'';
 
       // Build subtitle
       var sub='';
       if(it.cat==='lamper'){
         if(it.dmx){
           sub='MODE '+(it.dmx.u)+' ('+it.dmx.ch+'ch) &middot; '+it.watts+'W';
+        }else if(it.crmxUnit){
+          sub='CRMX &middot; '+(it.watts<20?'BATT':it.watts+'W');
         }else{
-          sub='STANDALONE &middot; '+(it.watts<20?'BATT':it.watts+'W');
+          sub=(it.watts<20?'BATT':it.watts+'W');
         }
         if(it.placering)sub+=' &middot; '+it.placering;
+        if(it.standalone)sub+=' '+standaloneBadge;
       }else if(it.cat==='styring'){
         sub=(it.desc||'').toUpperCase();
+        if(it.standalone)sub+=' '+standaloneBadge;
       }else{
         sub='ANTAL '+(it.qty||1);
+        if(it.standalone)sub+=' '+standaloneBadge;
       }
 
       // Build left "number" / icon
@@ -423,13 +477,15 @@ function renderList(){
         leftBlock='<div class="row-num" style="font-size:18px">&#9632;</div>';
       }
 
-      // Right block: DMX for lamper, qty for others
+      // Right block: DMX or CRMX for lamper, qty for others
       var rightBlock='';
       if(it.cat==='lamper'){
         if(it.dmx){
           rightBlock='<div class="row-right"><div class="row-uni">U'+it.dmx.u+'</div><div class="row-dmx">'+pad3(it.dmx.start)+'</div></div>';
+        }else if(it.crmxUnit){
+          rightBlock='<div class="row-right"><div class="row-uni crmx">CRMX UNIT</div><div class="row-dmx crmx-name">'+escapeHtml(it.crmxUnit)+'</div></div>';
         }else{
-          rightBlock='<div class="row-right"><div class="row-uni">STD</div><div class="row-dmx muted">&mdash;</div></div>';
+          rightBlock='<div class="row-right"><div class="row-dmx muted">&mdash;</div></div>';
         }
       }else if(it.cat==='styring'){
         rightBlock='<div class="row-right"></div>';
@@ -437,12 +493,14 @@ function renderList(){
         rightBlock='<div class="row-right"><div class="row-qty">x'+(it.qty||1)+'</div></div>';
       }
 
+      var nameLine=escapeHtml(it.name);
+
       html+='<div class="row cat-'+it.cat+(isOpen?' open':'')+'" data-id="'+it.id+'">'+
         '<div class="row-accent"></div>'+
         '<div class="row-head" onclick="toggleRow('+it.id+')">'+
           leftBlock+
           '<div class="row-info">'+
-            '<div class="row-name">'+it.name+'</div>'+
+            '<div class="row-name">'+nameLine+'</div>'+
             '<div class="row-sub">'+sub+depDots+'</div>'+
           '</div>'+
           rightBlock+
@@ -462,44 +520,71 @@ function buildDetail(it){
       '<div class="spec-card"><div class="spec-lbl">Watt</div><div class="spec-val">'+it.watts+'W</div></div>'+
       '<div class="spec-card"><div class="spec-lbl">Farve</div><div class="spec-val">'+(it.kelvin||'—')+'</div></div>'+
       '<div class="spec-card"><div class="spec-lbl">Beam</div><div class="spec-val">'+(it.beam||'—')+'</div></div>'+
-      '<div class="spec-card"><div class="spec-lbl">Placering</div><div class="spec-val">'+(it.placering||'—')+'</div></div>'+
-      '<div class="spec-card" style="grid-column:1/-1"><div class="spec-lbl">DMX</div><div class="spec-val">'+(it.dmx?'U'+it.dmx.u+':'+pad3(it.dmx.start)+' ('+it.dmx.ch+'ch)':'Standalone')+'</div></div>'+
-    '</div>';
+      '<div class="spec-card"><div class="spec-lbl">Placering</div><div class="spec-val">'+escapeHtml(it.placering||'—')+'</div></div>';
+    // DMX or CRMX tile
+    if(it.dmx){
+      html+='<div class="spec-card" style="grid-column:1/-1"><div class="spec-lbl">DMX</div><div class="spec-val">U'+it.dmx.u+':'+pad3(it.dmx.start)+' ('+it.dmx.ch+'ch)</div></div>';
+    }else if(it.crmxUnit){
+      html+='<div class="spec-card" style="grid-column:1/-1"><div class="spec-lbl">CRMX Unit</div><div class="spec-val">'+escapeHtml(it.crmxUnit)+'</div></div>';
+    }else{
+      html+='<div class="spec-card" style="grid-column:1/-1"><div class="spec-lbl">DMX</div><div class="spec-val dim">—</div></div>';
+    }
+    // Standalone tile
+    html+='<div class="spec-card" style="grid-column:1/-1"><div class="spec-lbl">Standalone</div><div class="spec-val '+(it.standalone?'green':'dim')+'">'+(it.standalone?'JA':'NEJ')+'</div></div>';
+    html+='</div>';
   }else if(it.cat==='styring'){
-    html+='<div class="detail-specs"><div class="spec-card"><div class="spec-lbl">Funktion</div><div class="spec-val">'+(it.desc||'—')+'</div></div></div>';
+    html+='<div class="detail-specs">'+
+      '<div class="spec-card"><div class="spec-lbl">Funktion</div><div class="spec-val">'+escapeHtml(it.desc||'—')+'</div></div>'+
+      '<div class="spec-card"><div class="spec-lbl">Standalone</div><div class="spec-val '+(it.standalone?'green':'dim')+'">'+(it.standalone?'JA':'NEJ')+'</div></div>'+
+    '</div>';
   }else{
-    html+='<div class="detail-specs"><div class="spec-card"><div class="spec-lbl">Antal</div><div class="spec-val">'+(it.qty||1)+'</div></div></div>';
+    html+='<div class="detail-specs">'+
+      '<div class="spec-card"><div class="spec-lbl">Antal</div><div class="spec-val">'+(it.qty||1)+'</div></div>'+
+      '<div class="spec-card"><div class="spec-lbl">Standalone</div><div class="spec-val '+(it.standalone?'green':'dim')+'">'+(it.standalone?'JA':'NEJ')+'</div></div>'+
+    '</div>';
   }
   if(it.deps&&it.deps.length){
     html+='<div class="detail-deps"><h4>Afhængigheder</h4>';
     for(var i=0;i<it.deps.length;i++){
       var d=it.deps[i];
-      html+='<div class="dep-row"><div class="dep-circle '+(d.ok?'ok':'miss')+'">'+(d.ok?'&#10003;':'!')+'</div><span class="dep-label">'+d.n+' — '+(d.ok?'OK':'MANGLER')+'</span></div>';
+      html+='<div class="dep-row"><div class="dep-circle '+(d.ok?'ok':'miss')+'">'+(d.ok?'&#10003;':'!')+'</div><span class="dep-label">'+escapeHtml(d.n)+' — '+(d.ok?'OK':'MANGLER')+'</span></div>';
     }
     html+='</div>';
   }
+  // DMX/CRMX edit form
   if(it.cat==='lamper'&&editingDmxId===it.id){
-    html+='<div class="dmx-edit-form">'+
-      '<div class="form-group"><label>Rediger DMX-adresse</label></div>'+
-      '<div class="dmx-edit-row">'+
-        '<div class="form-group"><label>Univers</label><input class="form-input" id="editU" type="number" min="1" value="'+(it.dmx?it.dmx.u:1)+'"></div>'+
-        '<div class="form-group"><label>Start</label><input class="form-input" id="editStart" type="number" min="1" value="'+(it.dmx?it.dmx.start:1)+'"></div>'+
-        '<div class="form-group"><label>Kanaler</label><input class="form-input" id="editCh" type="number" min="1" value="'+(it.dmx?it.dmx.ch:1)+'"></div>'+
-      '</div>'+
-      '<div style="margin-top:8px"><button class="dmx-save" onclick="saveDmx('+it.id+')">Gem</button><button class="dmx-cancel" onclick="cancelDmx()">Annuller</button></div>'+
-    '</div>';
+    if(it.crmxUnit&&!it.dmx){
+      // CRMX edit form
+      html+='<div class="dmx-edit-form">'+
+        '<div class="form-group"><label>Rediger CRMX Unit</label><input class="form-input" id="editCrmx" value="'+escapeHtml(it.crmxUnit)+'"></div>'+
+        '<div><button class="dmx-save" onclick="saveCrmx('+it.id+')">Gem</button><button class="dmx-cancel" onclick="cancelDmx()">Annuller</button></div>'+
+      '</div>';
+    }else{
+      // Wired DMX edit
+      html+='<div class="dmx-edit-form">'+
+        '<div class="form-group"><label>Rediger DMX-adresse</label></div>'+
+        '<div class="dmx-edit-row">'+
+          '<div class="form-group"><label>Univers</label><input class="form-input" id="editU" type="number" min="1" value="'+(it.dmx?it.dmx.u:1)+'"></div>'+
+          '<div class="form-group"><label>Start</label><input class="form-input" id="editStart" type="number" min="1" value="'+(it.dmx?it.dmx.start:1)+'"></div>'+
+          '<div class="form-group"><label>Kanaler</label><input class="form-input" id="editCh" type="number" min="1" value="'+(it.dmx?it.dmx.ch:1)+'"></div>'+
+        '</div>'+
+        '<div style="margin-top:8px"><button class="dmx-save" onclick="saveDmx('+it.id+')">Gem</button><button class="dmx-cancel" onclick="cancelDmx()">Annuller</button></div>'+
+      '</div>';
+    }
   }
   if(it.cat==='lamper'&&editingPlaceringId===it.id){
     html+='<div class="dmx-edit-form">'+
-      '<div class="form-group"><label>Rediger placering</label><input class="form-input" id="editPlacering" value="'+(it.placering||'').replace(/"/g,'&quot;')+'"></div>'+
+      '<div class="form-group"><label>Rediger placering</label><input class="form-input" id="editPlacering" value="'+escapeHtml(it.placering||'')+'"></div>'+
       '<div><button class="dmx-save" onclick="savePlacering('+it.id+')">Gem</button><button class="dmx-cancel" onclick="cancelPlacering()">Annuller</button></div>'+
     '</div>';
   }
   html+='<div class="detail-actions">';
   if(it.cat==='lamper'){
-    html+='<button class="detail-btn edit" onclick="event.stopPropagation();editDmx('+it.id+')">Ret DMX</button>';
+    var editLbl=(it.crmxUnit&&!it.dmx)?'Ret CRMX':'Ret DMX';
+    html+='<button class="detail-btn edit" onclick="event.stopPropagation();editDmx('+it.id+')">'+editLbl+'</button>';
     html+='<button class="detail-btn placering" onclick="event.stopPropagation();editPlacering('+it.id+')">Placering</button>';
   }
+  html+='<button class="detail-btn standalone" onclick="event.stopPropagation();toggleStandalone('+it.id+')">'+(it.standalone?'Slå Standalone fra':'Slå Standalone til')+'</button>';
   html+='<button class="detail-btn remove" onclick="event.stopPropagation();removeItem('+it.id+')">Fjern</button>';
   html+='</div>';
   return html;
@@ -519,8 +604,25 @@ function saveDmx(id){
   var s=parseInt(document.getElementById('editStart').value)||1;
   var c=parseInt(document.getElementById('editCh').value)||1;
   it.dmx={u:u,start:s,ch:c};
+  it.crmxUnit=null;
   editingDmxId=null;
   renderStats();renderList();toast('DMX-adresse opdateret');
+}
+function saveCrmx(id){
+  var it=items.find(function(i){return i.id===id});
+  if(!it)return;
+  var v=document.getElementById('editCrmx').value.trim();
+  if(!v){toast('Indtast et navn');return}
+  it.crmxUnit=v;
+  it.dmx=null;
+  editingDmxId=null;
+  renderStats();renderList();toast('CRMX Unit opdateret');
+}
+function toggleStandalone(id){
+  var it=items.find(function(i){return i.id===id});
+  if(!it)return;
+  it.standalone=!it.standalone;
+  renderStats();renderList();toast(it.standalone?'Standalone slået til':'Standalone slået fra');
 }
 function editPlacering(id){editingPlaceringId=id;editingDmxId=null;renderList()}
 function cancelPlacering(){editingPlaceringId=null;renderList()}
@@ -557,7 +659,17 @@ function openPatch(){
     for(var i=0;i<uItems.length;i++){
       var it=uItems[i];
       var end=it.dmx.start+it.dmx.ch-1;
-      html+='<tr><td class="fixture-col">'+(it.fixture||'—')+'</td><td>'+it.name+'</td><td>'+it.dmx.start+'</td><td>'+end+'</td><td>'+it.dmx.ch+'</td></tr>';
+      html+='<tr><td class="fixture-col">'+(it.fixture||'—')+'</td><td>'+escapeHtml(it.name)+'</td><td>'+it.dmx.start+'</td><td>'+end+'</td><td>'+it.dmx.ch+'</td></tr>';
+    }
+    html+='</table>';
+  }
+  // CRMX units section
+  var crmxItems=items.filter(function(i){return i.crmxUnit});
+  if(crmxItems.length){
+    html+='<h3>CRMX Units</h3><table class="patch-table"><tr><th>Fixture</th><th>Navn</th><th>CRMX Unit</th></tr>';
+    for(var ci=0;ci<crmxItems.length;ci++){
+      var it=crmxItems[ci];
+      html+='<tr><td class="fixture-col">'+(it.fixture||'—')+'</td><td>'+escapeHtml(it.name)+'</td><td>'+escapeHtml(it.crmxUnit)+'</td></tr>';
     }
     html+='</table>';
   }
@@ -576,7 +688,7 @@ function openPack(){
     for(var i=0;i<arr.length;i++){
       var it=arr[i];
       var q=it.qty||1;
-      html+='<div class="pack-item"><div class="pack-dot" style="background:'+CATS[it.cat]+'"></div><span class="pack-name">'+(it.fixture?it.fixture+' — ':'')+it.name+'</span><span class="pack-qty">x'+q+'</span></div>';
+      html+='<div class="pack-item"><div class="pack-dot" style="background:'+CATS[it.cat]+'"></div><span class="pack-name">'+(it.fixture?it.fixture+' — ':'')+escapeHtml(it.name)+'</span><span class="pack-qty">x'+q+'</span></div>';
     }
   }
   document.getElementById('packContent').innerHTML=html;
@@ -590,7 +702,7 @@ function openPower(){
     var it=lamps[i];
     var w=it.watts*(it.qty||1);
     totalW+=w;
-    rows+='<div class="power-row"><span class="power-name">'+(it.fixture?it.fixture+' ':'')+it.name+'</span><span class="power-val">'+w+'W</span></div>';
+    rows+='<div class="power-row"><span class="power-name">'+(it.fixture?it.fixture+' ':'')+escapeHtml(it.name)+'</span><span class="power-val">'+w+'W</span></div>';
   }
   var amps=(totalW/230).toFixed(1);
   var html='<div class="power-total"><div class="big">'+totalW+'W</div><div class="sub">'+amps+'A @ 230V enfase</div></div>'+
@@ -617,6 +729,8 @@ function shareSummary(){
       if(it.watts)line+=' ('+it.watts+'W)';
       if(it.placering)line+=' ['+it.placering+']';
       if(it.dmx)line+=' [U'+it.dmx.u+':'+pad3(it.dmx.start)+']';
+      if(it.crmxUnit)line+=' [CRMX: '+it.crmxUnit+']';
+      if(it.standalone)line+=' [STANDALONE]';
       txt+=line+'\n';
     }
     txt+='\n';
@@ -633,6 +747,13 @@ function openSettings(){
   renderSettingsList();
   openModal('settingsModal');
 }
+function setAddDmxType(t){
+  addDmxType=t;
+  var btns=document.querySelectorAll('#addDmxType .dmx-type-btn');
+  btns.forEach(function(b){b.classList.toggle('active',b.getAttribute('data-type')===t)});
+  document.getElementById('addWiredFields').style.display=(t==='wired')?'block':'none';
+  document.getElementById('addCrmxFields').style.display=(t==='crmx')?'block':'none';
+}
 function toggleAddFields(){
   var cat=document.getElementById('addCat').value;
   document.getElementById('addLampFields').style.display=cat==='lamper'?'block':'none';
@@ -641,12 +762,13 @@ function renderSettingsList(){
   var html='';
   for(var i=0;i<items.length;i++){
     var it=items[i];
+    var stBadge=it.standalone?' <span class="standalone-badge">STANDALONE</span>':'';
     html+='<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1a1a24">'+
-      '<div style="display:flex;align-items:center;gap:8px">'+
-        '<div style="width:8px;height:8px;border-radius:50%;background:'+CATS[it.cat]+'"></div>'+
-        '<span style="font-size:12px;color:#ccc;font-weight:400">'+(it.fixture?it.fixture+' — ':'')+it.name+(it.qty?' x'+it.qty:'')+'</span>'+
+      '<div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">'+
+        '<div style="width:8px;height:8px;border-radius:50%;background:'+CATS[it.cat]+';flex-shrink:0"></div>'+
+        '<span style="font-size:12px;color:#ccc;font-weight:400;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(it.fixture?it.fixture+' — ':'')+escapeHtml(it.name)+(it.qty?' x'+it.qty:'')+stBadge+'</span>'+
       '</div>'+
-      '<button onclick="removeItemFromSettings('+it.id+')" style="background:#3a1a1a;color:#f87171;border:none;border-radius:6px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;font-family:Tahoma">Slet</button>'+
+      '<button onclick="removeItemFromSettings('+it.id+')" style="background:#3a1a1a;color:#f87171;border:none;border-radius:6px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;font-family:Tahoma;flex-shrink:0;margin-left:6px">Slet</button>'+
     '</div>';
   }
   document.getElementById('settingsList').innerHTML=html;
@@ -662,18 +784,24 @@ function addItem(){
   if(!name){toast('Indtast et navn');return}
   var cat=document.getElementById('addCat').value;
   var qty=parseInt(document.getElementById('addQty').value)||1;
-  var item={id:nextId++,cat:cat,name:name};
+  var standalone=!!document.getElementById('addStandalone').checked;
+  var item={id:nextId++,cat:cat,name:name,standalone:standalone};
   if(cat!=='lamper'){
     item.qty=qty;
   }else{
     item.watts=parseInt(document.getElementById('addWatt').value)||0;
     var plc=(document.getElementById('addPlacering').value||'').trim().toUpperCase();
     if(plc)item.placering=plc;
-    var u=parseInt(document.getElementById('addUni').value)||0;
-    var addr=parseInt(document.getElementById('addAddr').value)||0;
-    var ch=parseInt(document.getElementById('addCh').value)||0;
-    if(u&&addr&&ch){
-      item.dmx={u:u,start:addr,ch:ch};
+    if(addDmxType==='wired'){
+      var u=parseInt(document.getElementById('addUni').value)||0;
+      var addr=parseInt(document.getElementById('addAddr').value)||0;
+      var ch=parseInt(document.getElementById('addCh').value)||0;
+      if(u&&addr&&ch){
+        item.dmx={u:u,start:addr,ch:ch};
+      }
+    }else if(addDmxType==='crmx'){
+      var crmx=(document.getElementById('addCrmxUnit').value||'').trim();
+      if(crmx)item.crmxUnit=crmx;
     }
     var lampCount=items.filter(function(i){return i.cat==='lamper'}).length;
     item.fixture='F'+String(lampCount+1).padStart(2,'0');
@@ -688,6 +816,9 @@ function addItem(){
   document.getElementById('addUni').value='1';
   document.getElementById('addAddr').value='';
   document.getElementById('addCh').value='';
+  var ac=document.getElementById('addCrmxUnit');if(ac)ac.value='';
+  document.getElementById('addStandalone').checked=false;
+  setAddDmxType('wired');
   toast('Udstyr tilføjet');
 }
 renderStats();
