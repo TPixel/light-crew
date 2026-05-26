@@ -51,26 +51,17 @@ body{background:#000;font-family:Tahoma,sans-serif;font-weight:700;color:#fff;di
 .row.cat-grip .row-accent{background:#D85A30}
 
 .row-head{display:flex;align-items:center;padding:12px 12px 12px 18px;cursor:pointer;gap:10px;min-height:60px}
-.row-num{font-size:23px;letter-spacing:-0.5px;font-weight:700;min-width:54px;text-align:left;line-height:1;flex-shrink:0}
-.row.cat-lamper .row-num{color:#378ADD}
-.row.cat-kabler .row-num{color:#1D9E75}
-.row.cat-stativer .row-num{color:#BA7517}
-.row.cat-styring .row-num{color:#534AB7}
-.row.cat-grip .row-num{color:#D85A30}
+.id-block{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-width:74px;flex-shrink:0;line-height:1;gap:4px}
+.row-num{font-size:21px;letter-spacing:-0.5px;font-weight:700;color:#fff;text-align:left;line-height:1}
 .row-info{flex:1;min-width:0;text-align:left}
 .row-name{font-size:14px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700;letter-spacing:.2px}
 .row-sub{font-size:10px;color:#888;font-weight:700;margin-top:3px;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.row-right{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:54px;flex-shrink:0;line-height:1}
-.row-uni{font-size:10px;color:#7C6AF7;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:2px}
-.row-uni.crmx{font-size:10px;letter-spacing:1px}
-.row-dmx{font-size:22px;color:#7C6AF7;font-weight:700;letter-spacing:-0.5px}
-.row-dmx.muted{color:#555;font-size:14px}
-.row-dmx.crmx-name{font-size:14px;color:#7C6AF7;line-height:1.1;text-align:center;max-width:84px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.row-qty{font-size:22px;font-weight:700;letter-spacing:-0.5px;line-height:1}
-.row.cat-kabler .row-qty{color:#1D9E75}
-.row.cat-stativer .row-qty{color:#BA7517}
-.row.cat-styring .row-qty{color:#534AB7}
-.row.cat-grip .row-qty{color:#D85A30}
+.row-right{display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;line-height:1}
+.row-uni{display:none}
+.row-dmx{font-size:13px;color:#fff;font-weight:700;letter-spacing:0.5px;line-height:1.1}
+.row-dmx.muted{color:#555;font-size:13px}
+.row-dmx.crmx-name{font-size:13px;color:#fff;font-weight:700;letter-spacing:0.5px;line-height:1.15;text-align:left;max-width:74px;white-space:normal;word-break:break-word}
+.row-qty{font-size:18px;font-weight:700;color:#fff;letter-spacing:-0.5px;line-height:1}
 .row-chevron{color:#555;font-size:12px;transition:transform .2s;margin-left:4px}
 .row.open .row-chevron{transform:rotate(90deg)}
 
@@ -468,30 +459,25 @@ function renderList(){
         if(it.standalone)sub+=' '+standaloneBadge;
       }
 
-      // Build left "number" / icon
+      // Build left id-block: fixture number + DMX/CRMX grouped together
       var leftBlock='';
       if(it.cat==='lamper'){
         var num=it.fixture?'#'+it.fixture.replace(/^F/,''):'#';
-        leftBlock='<div class="row-num">'+num+'</div>';
+        var dmxLine='';
+        if(it.dmx){
+          dmxLine='<div class="row-dmx">U'+it.dmx.u+':'+pad3(it.dmx.start)+'</div>';
+        }else if(it.crmxUnit){
+          dmxLine='<div class="row-dmx crmx-name">'+escapeHtml(it.crmxUnit)+'</div>';
+        }
+        leftBlock='<div class="id-block"><div class="row-num">'+num+'</div>'+dmxLine+'</div>';
+      }else if(it.cat==='styring'){
+        leftBlock='<div class="id-block"><div class="row-num" style="font-size:18px">&#9632;</div></div>';
       }else{
-        leftBlock='<div class="row-num" style="font-size:18px">&#9632;</div>';
+        leftBlock='<div class="id-block"><div class="row-qty">x'+(it.qty||1)+'</div></div>';
       }
 
-      // Right block: DMX or CRMX for lamper, qty for others
+      // Right block removed — DMX moved to left block. Keep empty placeholder.
       var rightBlock='';
-      if(it.cat==='lamper'){
-        if(it.dmx){
-          rightBlock='<div class="row-right"><div class="row-uni">U'+it.dmx.u+'</div><div class="row-dmx">'+pad3(it.dmx.start)+'</div></div>';
-        }else if(it.crmxUnit){
-          rightBlock='<div class="row-right"><div class="row-uni crmx">CRMX UNIT</div><div class="row-dmx crmx-name">'+escapeHtml(it.crmxUnit)+'</div></div>';
-        }else{
-          rightBlock='<div class="row-right"><div class="row-dmx muted">&mdash;</div></div>';
-        }
-      }else if(it.cat==='styring'){
-        rightBlock='<div class="row-right"></div>';
-      }else{
-        rightBlock='<div class="row-right"><div class="row-qty">x'+(it.qty||1)+'</div></div>';
-      }
 
       var nameLine=escapeHtml(it.name);
 
