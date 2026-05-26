@@ -50,21 +50,25 @@ body{background:#000;font-family:Tahoma,sans-serif;font-weight:700;color:#fff;di
 .row.cat-styring .row-accent{background:#534AB7}
 .row.cat-grip .row-accent{background:#D85A30}
 
-.row-head{display:flex;align-items:flex-start;padding:14px 14px 14px 22px;cursor:pointer;gap:10px;min-height:60px;position:relative}
+.row-head{display:flex;align-items:flex-start;padding:14px 16px 14px 20px;cursor:pointer;gap:10px;position:relative}
 .row-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
-.row-id-line{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;line-height:1}
-.row-num{font-size:25px;letter-spacing:-0.5px;font-weight:700;color:#fff;line-height:1.05}
-.row-num.crmx-name{font-size:21px;letter-spacing:0.3px;color:#fff;font-weight:700;line-height:1.1;word-break:break-word}
-.row-num.dmx{font-size:25px;letter-spacing:0.5px;color:#fff;font-weight:700;line-height:1.05}
-.row-num.qty{font-size:25px;letter-spacing:-0.5px;color:#fff;font-weight:700;line-height:1.05}
-.row-name{font-size:16px;color:#fff;font-weight:700;letter-spacing:.2px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.row-sub{font-size:12px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:1px;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.row-dep-line{margin-top:2px}
-.row-chevron{color:#555;font-size:12px;transition:transform .2s;position:absolute;top:14px;right:14px}
+.row-id-line{display:flex;align-items:baseline;justify-content:space-between;width:100%;font-size:34px;font-weight:700;color:#fff;letter-spacing:-0.5px;line-height:1;margin-bottom:10px}
+.row-num{font-size:34px;letter-spacing:-0.5px;font-weight:700;color:#fff;line-height:1}
+.row-num.crmx-name{font-size:26px;letter-spacing:0.3px;color:#fff;font-weight:700;line-height:1;text-align:right;word-break:break-word;max-width:60%}
+.row-num.dmx{font-size:34px;letter-spacing:0;color:#fff;font-weight:700;line-height:1;text-align:right}
+.row-num.qty{font-size:34px;letter-spacing:-0.5px;color:#fff;font-weight:700;line-height:1;text-align:right}
+.row-name-inline{font-size:22px;font-weight:700;color:#fff;letter-spacing:-0.3px;line-height:1.05;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
+.row-qty{font-size:34px;font-weight:700;color:#fff;letter-spacing:-0.5px;line-height:1;text-align:right;margin-left:12px}
+.row-name{font-size:15px;color:#fff;font-weight:700;letter-spacing:.2px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:4px}
+.row-sub{font-size:11px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:1px;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row.cat-styring .row-name{font-size:17px}
+.row.cat-styring .row-sub{font-size:12px}
+.row-dep-line{margin-top:6px}
+.row-chevron{color:#555;font-size:11px;transition:transform .2s;position:absolute;top:16px;right:16px}
 .row.open .row-chevron{transform:rotate(90deg)}
 
-.dep-dots{display:inline-flex;gap:4px;margin-left:8px;vertical-align:middle}
-.dep-dot{width:7px;height:7px;border-radius:50%}
+.dep-dots{display:inline-flex;gap:6px;vertical-align:middle}
+.dep-dot{width:8px;height:8px;border-radius:50%}
 .dep-dot.ok{background:#4ade80}
 .dep-dot.miss{background:#f87171}
 
@@ -468,20 +472,25 @@ function renderList(){
           idLine+='<span class="row-num crmx-name">'+escapeHtml(it.crmxUnit)+'</span>';
         }
       }else if(it.cat==='styring'){
-        idLine+='<span class="row-num">&#9632;</span>';
+        // styring has no big number — leave idLine empty, we'll hide the line
       }else{
-        idLine+='<span class="row-num qty">x'+(it.qty||1)+'</span>';
+        // kabler/stativer/grip: name on left big, qty on right big — no separate name row
+        idLine+='<span class="row-name-inline">'+escapeHtml(it.name)+'</span>';
+        idLine+='<span class="row-qty">x'+(it.qty||1)+'</span>';
       }
 
       var nameLine=escapeHtml(it.name);
 
+      var isQtyOnlyCat = (it.cat==='kabler'||it.cat==='stativer'||it.cat==='grip');
+      var nameHtml = isQtyOnlyCat ? '' : ('<div class="row-name">'+nameLine+'</div>');
+      var subHtml = (isQtyOnlyCat && !it.standalone) ? '' : ('<div class="row-sub">'+sub+'</div>');
       html+='<div class="row cat-'+it.cat+(isOpen?' open':'')+'" data-id="'+it.id+'">'+
         '<div class="row-accent"></div>'+
         '<div class="row-head" onclick="toggleRow('+it.id+')">'+
           '<div class="row-body">'+
-            '<div class="row-id-line">'+idLine+'</div>'+
-            '<div class="row-name">'+nameLine+'</div>'+
-            '<div class="row-sub">'+sub+'</div>'+
+            (idLine?'<div class="row-id-line">'+idLine+'</div>':'')+
+            nameHtml+
+            subHtml+
             (depDots?'<div class="row-dep-line">'+depDots+'</div>':'')+
           '</div>'+
           '<div class="row-chevron">&#9656;</div>'+
