@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>Light Crew v2 — Test App</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:#000;font-family:Tahoma,sans-serif;font-weight:700;color:#fff;display:flex;justify-content:center;min-height:100vh;min-height:100dvh}
+.phone{width:100%;max-width:430px;background:#0C0C12;min-height:100vh;min-height:100dvh;position:relative;overflow:hidden;display:flex;flex-direction:column}
+
+/* ===== HEADER ===== */
+.header{position:relative;padding:22px 18px 16px;background:linear-gradient(135deg,#1a1530 0%,#231938 55%,#1a1530 100%);border-top:3px solid #7C6AF7;box-shadow:0 4px 16px rgba(124,106,247,.18) inset;overflow:hidden}
+.header::before{content:"";position:absolute;top:0;right:-40px;width:160px;height:100%;background:radial-gradient(circle at right,rgba(124,106,247,.25) 0%,transparent 65%);pointer-events:none}
+.header-eyebrow{font-size:9px;letter-spacing:2.4px;color:#7C6AF7;text-transform:uppercase;margin-bottom:4px;position:relative;z-index:1}
+.header-title{font-size:28px;letter-spacing:-.5px;color:#fff;line-height:1.02;text-transform:uppercase;position:relative;z-index:1}
+.header-sub{font-size:11px;color:#888;margin-top:8px;letter-spacing:2px;text-transform:uppercase;position:relative;z-index:1}
+
+/* ===== STATS STRIP ===== */
+.stats{margin:12px 16px 8px;background:#1a1a24;border:1px solid #23232f;border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 10px;text-align:center}
+.stat{font-size:11px;letter-spacing:1px;color:#888;text-transform:uppercase;white-space:nowrap}
+.stat b{color:#fff;margin-right:3px}
+.stat.red b{color:#f87171}
+.sep{color:#3a3a48;font-size:11px}
+
+/* ===== SEARCH BAR ===== */
+.search-bar{margin:0 16px 6px;position:relative}
+.search-bar input{width:100%;background:#1a1a24;border:1.5px solid #23232f;border-radius:10px;padding:12px 14px 12px 38px;color:#fff;font-family:Tahoma,sans-serif;font-size:13px;font-weight:400;outline:none;transition:border-color .2s}
+.search-bar input:focus{border-color:#7C6AF7}
+.search-bar input::placeholder{color:#555}
+.search-bar .icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#555;font-size:14px;pointer-events:none}
+
+/* ===== FILTER BAR ===== */
+.filters{display:flex;gap:6px;padding:4px 16px 10px;overflow-x:auto;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.fbtn{background:#1a1a24;border:1.5px solid #23232f;border-radius:8px;padding:8px 14px;color:#888;font-family:Tahoma,sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .15s;display:flex;align-items:center;gap:5px}
+.fbtn .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.fbtn.active{background:#7C6AF7;border-color:#7C6AF7;color:#fff}
+.fbtn.active .dot{box-shadow:0 0 0 2px rgba(255,255,255,.5)}
+
+/* ===== LIST ===== */
+.list{flex:1;overflow-y:auto;padding:0 12px 120px;-webkit-overflow-scrolling:touch}
+.section-label{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:1.5px;padding:10px 6px 6px}
+
+/* ===== ROW ITEM ===== */
+.row{border-radius:12px;margin-bottom:6px;overflow:hidden;position:relative;border:1px solid transparent;transition:all .15s}
+.row.cat-lamper{background:#1a2330;border-color:#22324a}
+.row.cat-kabler{background:#1a2a23;border-color:#22402f}
+.row.cat-stativer{background:#2a2418;border-color:#3d3221}
+.row.cat-styring{background:#211e30;border-color:#2e2944}
+.row.cat-grip{background:#2a1d18;border-color:#3d2820}
+.row-accent{position:absolute;left:0;top:0;bottom:0;width:6px}
+.row.cat-lamper .row-accent{background:#378ADD}
+.row.cat-kabler .row-accent{background:#1D9E75}
+.row.cat-stativer .row-accent{background:#BA7517}
+.row.cat-styring .row-accent{background:#534AB7}
+.row.cat-grip .row-accent{background:#D85A30}
+
+.row-head{display:flex;align-items:flex-start;padding:14px 14px 14px 18px;cursor:pointer;gap:10px;position:relative}
+.row-body{flex:1;min-width:0}
+.row-top-line{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2px}
+.row-fixture{font-size:13px;color:#7C6AF7;letter-spacing:.5px}
+.row-dmx{font-size:14px;color:#fff;letter-spacing:.3px;text-align:right}
+.row-name{font-size:16px;color:#fff;letter-spacing:-.2px;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row-sub{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.8px;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row-deps{display:flex;gap:5px;margin-top:6px}
+.dep-dot{width:9px;height:9px;border-radius:50%}
+.dep-dot.ok{background:#4ade80}
+.dep-dot.miss{background:#f87171;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.row-chevron{color:#555;font-size:11px;transition:transform .2s;flex-shrink:0;margin-top:4px}
+.row.open .row-chevron{transform:rotate(90deg)}
+.row.open{border-color:#7C6AF7}
+
+/* ===== DETAIL PANEL ===== */
+.detail{display:none;padding:0 14px 16px 18px}
+.row.open .detail{display:block}
+
+.detail-img{width:100%;max-height:200px;object-fit:contain;border-radius:10px;background:#12121a;margin-bottom:12px}
+.detail-img-wrap{position:relative;width:100%;background:#12121a;border-radius:10px;margin-bottom:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:120px}
+.detail-img-wrap img{max-width:100%;max-height:200px;object-fit:contain;display:block}
+.detail-img-wrap .img-fallback{color:#555;font-size:48px;padding:30px}
+
+.d-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+.d-grid.triple{grid-template-columns:1fr 1fr 1fr}
+.d-card{background:rgba(0,0,0,.3);border-radius:8px;padding:8px 10px}
+.d-card .lbl{font-size:9px;color:#666;text-transform:uppercase;letter-spacing:.5px}
+.d-card .val{font-size:14px;color:#fff;margin-top:2px}
+.d-card .val.green{color:#4ade80}
+.d-card .val.red{color:#f87171}
+.d-card .val.purple{color:#A78BFA}
+.d-card.full{grid-column:1/-1}
+
+.d-deps-title{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.d-dep{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.d-dep:last-child{border:none}
+.d-dep-circle{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+.d-dep-circle.ok{background:#1a3a1a;color:#4ade80}
+.d-dep-circle.miss{background:#3a1a1a;color:#f87171}
+.d-dep-name{flex:1;font-size:12px;color:#ccc}
+.d-dep-status{font-size:11px}
+.d-dep-status.ok{color:#4ade80}
+.d-dep-status.miss{color:#f87171}
+
+.d-actions{display:flex;gap:6px;margin-top:12px}
+.d-btn{flex:1;padding:9px;border-radius:8px;border:1.5px solid #2a2a36;background:transparent;color:#888;font-family:Tahoma,sans-serif;font-size:11px;font-weight:700;text-align:center;cursor:pointer;transition:all .15s}
+.d-btn:active{background:#2a2a36}
+
+/* ===== BOTTOM BAR ===== */
+.bottom-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:linear-gradient(to top,#0C0C12 80%,transparent);padding:16px 16px;padding-bottom:max(16px,env(safe-area-inset-bottom));display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;z-index:50}
+.bb{padding:12px 8px;border-radius:10px;border:none;font-family:Tahoma,sans-serif;font-size:13px;font-weight:700;cursor:pointer;text-align:center;transition:all .15s}
+.bb.primary{background:#7C6AF7;color:#fff}
+.bb.secondary{background:#1a1a24;color:#888;border:1px solid #2a2a36}
+.bb:active{transform:scale(.96)}
+
+/* ===== MODALS ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:100;display:none;justify-content:center;align-items:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.modal-overlay.show{display:flex;animation:fadeIn .15s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{width:100%;max-width:430px;background:#0C0C12;min-height:100vh;min-height:100dvh;padding:16px}
+.modal-close{position:sticky;top:0;float:right;background:rgba(12,12,18,.9);border:1px solid #2a2a36;border-radius:10px;color:#888;font-size:18px;cursor:pointer;z-index:5;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
+.modal h2{font-size:18px;color:#fff;text-align:center;margin-bottom:16px;padding-top:4px;clear:both}
+.modal h3{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:1.5px;margin:18px 0 10px}
+
+/* Patch table */
+.patch-tbl{width:100%;border-collapse:collapse}
+.patch-tbl th{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;text-align:left;padding:6px 8px;border-bottom:1px solid #2a2a36;position:sticky;top:0;background:#0C0C12}
+.patch-tbl td{font-size:12px;color:#ccc;padding:8px;border-bottom:1px solid #1a1a24}
+.patch-tbl .fx{color:#7C6AF7;font-weight:700}
+.patch-tbl .dmx-col{color:#fff;font-weight:700}
+
+/* Pakkeliste */
+.pack-group{margin-bottom:16px}
+.pack-group-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;padding:6px 0;display:flex;align-items:center;gap:8px}
+.pack-group-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.pack-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#1a1a24;border-radius:8px;margin-bottom:4px}
+.pack-check{width:18px;height:18px;border:2px solid #3a3a48;border-radius:4px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.pack-check.checked{background:#4ade80;border-color:#4ade80}
+.pack-check.checked::after{content:"✓";color:#000;font-size:11px}
+.pack-name{flex:1;font-size:12px;color:#ccc}
+.pack-qty{font-size:13px;color:#fff;font-weight:700}
+
+/* Strøm */
+.power-total{background:linear-gradient(135deg,#1a1530,#231938);border:1px solid #3a3a48;border-radius:12px;padding:16px;text-align:center;margin-bottom:16px}
+.power-total .big{font-size:32px;color:#fff}
+.power-total .unit{font-size:14px;color:#888;margin-left:4px}
+.power-total .sub{font-size:12px;color:#888;margin-top:4px}
+.power-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#1a1a24;border-radius:8px;margin-bottom:4px}
+.power-row .nm{font-size:12px;color:#ccc}
+.power-row .vl{font-size:13px;color:#fff;font-weight:700}
+.power-row .vl.warn{color:#f87171}
+.power-section{margin-bottom:16px}
+
+.modal-print{width:100%;padding:14px;background:#7C6AF7;color:#fff;border:none;border-radius:10px;font-family:Tahoma,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:16px}
+.modal-print:active{transform:scale(.97)}
+
+/* ===== PRINT ===== */
+@media print{
+body{background:#fff!important}
+.phone{background:#fff!important;max-width:100%!important}
+.bottom-bar,.header,.stats,.search-bar,.filters{display:none!important}
+.modal-overlay{position:static!important;background:#fff!important}
+.modal{background:#fff!important;min-height:auto!important}
+.modal-close,.modal-print{display:none!important}
+.modal h2,.modal h3{color:#000!important}
+.pack-name,.patch-tbl td,.power-row .nm{color:#000!important}
+.pack-qty,.power-row .vl{color:#000!important}
+.list{display:none!important}
+}
+</style>
+</head>
+<body>
+<div class="phone" id="app">
+
+<!-- HEADER -->
+<div class="header">
+<div class="header-eyebrow">Light Crew v2 · Test</div>
+<h1 class="header-title">Den Lukkede Bog</h1>
+<p class="header-sub">Studie A · 10 enheder</p>
+</div>
+
+<!-- STATS -->
+<div class="stats" id="statsStrip"></div>
+
+<!-- SEARCH -->
+<div class="search-bar">
+<span class="icon">&#128269;</span>
+<input id="searchInput" type="text" placeholder="Søg udstyr..." oninput="render()">
+</div>
+
+<!-- FILTERS -->
+<div class="filters" id="filterBar"></div>
+
+<!-- LIST -->
+<div class="list" id="itemList"></div>
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
+<button class="bb primary" onclick="openModal('patchModal',renderPatch)">Patch</button>
+<button class="bb secondary" onclick="openModal('packModal',renderPack)">Pakkeliste</button>
+<button class="bb secondary" onclick="openModal('powerModal',renderPower)">Strøm</button>
+</div>
+</div>
+
+<!-- PATCH MODAL -->
+<div class="modal-overlay" id="patchModal">
+<div class="modal">
+<button class="modal-close" onclick="closeModal('patchModal')">&#10005;</button>
+<h2>Patch Udtræk</h2>
+<div id="patchContent"></div>
+<button class="modal-print" onclick="window.print()">Print patch</button>
+</div>
+</div>
+
+<!-- PAKKELISTE MODAL -->
+<div class="modal-overlay" id="packModal">
+<div class="modal">
+<button class="modal-close" onclick="closeModal('packModal')">&#10005;</button>
+<h2>Pakkeliste</h2>
+<div id="packContent"></div>
+<button class="modal-print" onclick="window.print()">Print pakkeliste</button>
+</div>
+</div>
+
+<!-- STRØM MODAL -->
+<div class="modal-overlay" id="powerModal">
+<div class="modal">
+<button class="modal-close" onclick="closeModal('powerModal')">&#10005;</button>
+<h2>Strøm-oversigt</h2>
+<div id="powerContent"></div>
+</div>
+</div>
+
+<script>
+// ===== COLORS =====
+const CAT_COLORS = {
+  lamper:'#378ADD', kabler:'#1D9E75', stativer:'#BA7517', styring:'#534AB7', grip:'#D85A30'
+};
+const CAT_NAMES = {
+  lamper:'Lamper', kabler:'Kabler', stativer:'Stativer', styring:'Styring', grip:'Grip'
+};
+const CAT_ORDER = ['lamper','styring','kabler','stativer','grip'];
+
+// ===== DATA — 10 items med FULDE detaljer =====
+const items = [
+  // === LAMPER ===
+  {
+    id:1, cat:'lamper', fixture:'F01',
+    name:'Arri SkyPanel S60-C',
+    brand:'Arri',
+    watts:455,
+    dmx:{u:1, start:1, ch:15, mode:'Mode 1 (15ch)'},
+    kelvin:'2800–10000K', cri:'CRI 95+', beam:'115°',
+    power:'Powercon TRUE1, max 6A',
+    weight:'16.5 kg',
+    img:'https://www.arri.com/resource/blob/31066/ae685e3e3632d3e8cb6809c84b1ff79e/skypanel-s60-c-data.jpg',
+    deps:[
+      {name:'Powercon kabel 10m', ok:true, cat:'kabler'},
+      {name:'C-Stand 40"', ok:true, cat:'stativer'},
+      {name:'Sandsæk 15kg', ok:true, cat:'grip'}
+    ]
+  },
+  {
+    id:2, cat:'lamper', fixture:'F02',
+    name:'Astera Titan Tube FP1',
+    brand:'Astera',
+    watts:72,
+    dmx:{u:1, start:16, ch:20, mode:'Mode 3 (20ch)'},
+    kelvin:'1750–20000K', cri:'CRI 96+', beam:'120°',
+    power:'Batteri (internt) + Powercon lader',
+    weight:'1.4 kg',
+    img:'https://astera-led.com/wp-content/uploads/FP1-Titan-Tube-left-facing-scaled.jpg',
+    deps:[
+      {name:'Ophæng', ok:false, cat:'stativer'},
+      {name:'Sikring', ok:false, cat:'grip'}
+    ]
+  },
+  {
+    id:3, cat:'lamper', fixture:'F03',
+    name:'Aputure LS 600d Pro',
+    brand:'Aputure',
+    watts:600,
+    dmx:{u:1, start:36, ch:6, mode:'Mode 2 (6ch)'},
+    kelvin:'5600K', cri:'CRI 96+', beam:'120°',
+    power:'CEE 16A',
+    weight:'7.55 kg (hoved)',
+    img:'https://aputure.com/wp-content/uploads/2021/10/LS-600d-Pro-lamp-head-hero.png',
+    deps:[
+      {name:'CEE kabel', ok:true, cat:'kabler'},
+      {name:'Combo Stand', ok:true, cat:'stativer'},
+      {name:'Sandsæk 25kg', ok:false, cat:'grip'}
+    ]
+  },
+  {
+    id:4, cat:'lamper', fixture:'F04',
+    name:'Creamsource Vortex8',
+    brand:'Creamsource',
+    watts:1200,
+    dmx:{u:2, start:1, ch:23, mode:'DMX (23ch)'},
+    kelvin:'2800–10000K', cri:'CRI 97+', beam:'100°',
+    power:'CEE 32A',
+    weight:'24 kg',
+    img:'https://creamsource.com/wp-content/uploads/2020/09/Vortex8-Transparent-800.png',
+    deps:[
+      {name:'CEE 32A kabel', ok:true, cat:'kabler'},
+      {name:'Junior spigot + Combo', ok:true, cat:'stativer'},
+      {name:'Sandsæk 25kg', ok:true, cat:'grip'}
+    ]
+  },
+  // === STYRING ===
+  {
+    id:5, cat:'styring',
+    name:'grandMA3 onPC + MA3 Processing Unit',
+    brand:'MA Lighting',
+    desc:'2 universer · sACN/Art-Net/DMX512',
+    img:'https://www.malighting.com/media/image/71/1f/f7/grandMA3_processing_unit_M_front_2000.png',
+    deps:[
+      {name:'Ethernet kabel', ok:true, cat:'kabler'},
+      {name:'Strøm', ok:true, cat:'kabler'}
+    ]
+  },
+  // === KABLER ===
+  {
+    id:6, cat:'kabler',
+    name:'5-pin DMX kabel 10m',
+    qty:4,
+    details:{length:'10m', connector:'5-pin XLR M/F'}
+  },
+  {
+    id:7, cat:'kabler',
+    name:'Powercon TRUE1 kabel 10m',
+    qty:3,
+    details:{length:'10m', connector:'Neutrik TRUE1 M/F'}
+  },
+  // === STATIVER ===
+  {
+    id:8, cat:'stativer',
+    name:'C-Stand 40" + arm + knuckle',
+    qty:3,
+    details:{
+      fullHeight:'320 cm',
+      packedHeight:'105 cm',
+      maxLoad:'9.8 kg',
+      spigot:'28mm brønd',
+      leveling:'Ja'
+    }
+  },
+  {
+    id:9, cat:'stativer',
+    name:'Combo Stand',
+    qty:2,
+    details:{
+      fullHeight:'390 cm',
+      packedHeight:'125 cm',
+      maxLoad:'40 kg',
+      spigot:'Junior (28mm)',
+      leveling:'Ja'
+    }
+  },
+  // === GRIP ===
+  {
+    id:10, cat:'grip',
+    name:'Sandsæk 15kg',
+    qty:6
+  }
+];
+
+// ===== STATE =====
+let activeFilter = 'all';
+let openRowId = null;
+
+// ===== HELPERS =====
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+function pad3(n){ return String(n).padStart(3,'0') }
+
+// ===== STATS =====
+function renderStats(){
+  let total = items.length;
+  let missing = 0;
+  items.forEach(it => { if(it.deps) it.deps.forEach(d => { if(!d.ok) missing++ }) });
+  let univs = new Set();
+  let dmxMax = {};
+  items.forEach(it => {
+    if(it.dmx){
+      univs.add(it.dmx.u);
+      let end = it.dmx.start + it.dmx.ch - 1;
+      if(!dmxMax[it.dmx.u] || end > dmxMax[it.dmx.u]) dmxMax[it.dmx.u] = end;
+    }
+  });
+  let uCount = univs.size || 0;
+  let totalCh = 0;
+  for(let u in dmxMax) totalCh += dmxMax[u];
+
+  document.getElementById('statsStrip').innerHTML =
+    `<span class="stat"><b>${total}</b>Enheder</span>` +
+    `<span class="sep">&middot;</span>` +
+    `<span class="stat${missing?' red':''}"><b>${missing}</b>Mangler</span>` +
+    `<span class="sep">&middot;</span>` +
+    `<span class="stat"><b>${uCount}</b>Univ</span>` +
+    `<span class="sep">&middot;</span>` +
+    `<span class="stat"><b>${totalCh}/${uCount*512}</b>DMX</span>`;
+}
+
+// ===== FILTERS =====
+function renderFilters(){
+  let html = `<button class="fbtn${activeFilter==='all'?' active':''}" onclick="setFilter('all')">Alle</button>`;
+  CAT_ORDER.forEach(c => {
+    html += `<button class="fbtn${activeFilter===c?' active':''}" onclick="setFilter('${c}')">` +
+      `<span class="dot" style="background:${CAT_COLORS[c]}"></span>${CAT_NAMES[c]}</button>`;
+  });
+  document.getElementById('filterBar').innerHTML = html;
+}
+
+function setFilter(cat){
+  activeFilter = cat;
+  render();
+}
+
+// ===== TOGGLE ROW =====
+function toggleRow(id){
+  openRowId = openRowId === id ? null : id;
+  renderList();
+}
+
+// ===== BUILD DETAIL =====
+function buildDetail(it){
+  let html = '';
+
+  // Image
+  if(it.img){
+    html += `<div class="detail-img-wrap">` +
+      `<img src="${esc(it.img)}" alt="${esc(it.name)}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">` +
+      `<div class="img-fallback" style="display:none">&#128161;</div></div>`;
+  }
+
+  // Lamper specs
+  if(it.cat === 'lamper'){
+    html += `<div class="d-grid">`;
+    html += `<div class="d-card"><div class="lbl">Watt</div><div class="val">${it.watts}W</div></div>`;
+    html += `<div class="d-card"><div class="lbl">DMX</div><div class="val purple">U${it.dmx.u}:${pad3(it.dmx.start)} (${it.dmx.ch}ch)</div></div>`;
+    html += `<div class="d-card"><div class="lbl">Farvetemperatur</div><div class="val">${esc(it.kelvin)}</div></div>`;
+    html += `<div class="d-card"><div class="lbl">CRI</div><div class="val green">${esc(it.cri)}</div></div>`;
+    html += `<div class="d-card"><div class="lbl">Beam</div><div class="val">${esc(it.beam)}</div></div>`;
+    html += `<div class="d-card"><div class="lbl">Vægt</div><div class="val">${esc(it.weight)}</div></div>`;
+    html += `<div class="d-card full"><div class="lbl">Strøm</div><div class="val">${esc(it.power)}</div></div>`;
+    html += `<div class="d-card full"><div class="lbl">DMX Mode</div><div class="val">${esc(it.dmx.mode)}</div></div>`;
+    html += `</div>`;
+  }
+
+  // Styring specs
+  if(it.cat === 'styring'){
+    if(it.img){
+      // image already shown above
+    }
+    html += `<div class="d-grid">`;
+    html += `<div class="d-card full"><div class="lbl">System</div><div class="val">${esc(it.desc)}</div></div>`;
+    html += `</div>`;
+  }
+
+  // Kabler specs
+  if(it.cat === 'kabler' && it.details){
+    html += `<div class="d-grid">`;
+    html += `<div class="d-card"><div class="lbl">Længde</div><div class="val">${esc(it.details.length)}</div></div>`;
+    html += `<div class="d-card"><div class="lbl">Stik</div><div class="val">${esc(it.details.connector)}</div></div>`;
+    html += `</div>`;
+  }
+
+  // Stativer specs
+  if(it.cat === 'stativer' && it.details){
+    html += `<div class="d-grid">`;
+    html += `<div class="d-card"><div class="lbl">Fuld højde</div><div class="val">${esc(it.details.fullHeight)}</div></div>`;
+    html += `<div class="d-card"><div class="lbl">Pakket</div><div class="val">${esc(it.details.packedHeight)}</div></div>`;
+    html += `<div class="d-card"><div class="lbl">Max bæreevne</div><div class="val">${esc(it.details.maxLoad)}</div></div>`;
+    html += `<div class="d-card"><div class="lbl">Spigot</div><div class="val">${esc(it.details.spigot)}</div></div>`;
+    if(it.details.leveling){
+      html += `<div class="d-card full"><div class="lbl">Kan nivelleres</div><div class="val green">${esc(it.details.leveling)}</div></div>`;
+    }
+    html += `</div>`;
+  }
+
+  // Dependencies
+  if(it.deps && it.deps.length){
+    html += `<div class="d-deps-title">Dependencies</div>`;
+    it.deps.forEach(d => {
+      let cls = d.ok ? 'ok' : 'miss';
+      let icon = d.ok ? '✓' : '!';
+      let statusTxt = d.ok ? 'OK' : 'MANGLER';
+      html += `<div class="d-dep">` +
+        `<div class="d-dep-circle ${cls}">${icon}</div>` +
+        `<div class="d-dep-name">${esc(d.name)}</div>` +
+        `<div class="d-dep-status ${cls}">${statusTxt}</div>` +
+        `</div>`;
+    });
+  }
+
+  // Actions
+  html += `<div class="d-actions">` +
+    `<div class="d-btn">&#127991; Label</div>` +
+    `<div class="d-btn">&#128196; Spec</div>` +
+    `<div class="d-btn">&#9998; Ret</div>` +
+    `</div>`;
+
+  return html;
+}
+
+// ===== RENDER LIST =====
+function renderList(){
+  let q = (document.getElementById('searchInput')||{}).value?.toLowerCase() || '';
+  let groups = {};
+  CAT_ORDER.forEach(c => groups[c] = []);
+
+  items.forEach(it => {
+    if(activeFilter !== 'all' && it.cat !== activeFilter) return;
+    if(q){
+      let haystack = (it.name + ' ' + (it.fixture||'') + ' ' + (it.brand||'') + ' ' + (it.cat||'')).toLowerCase();
+      if(haystack.indexOf(q) < 0) return;
+    }
+    groups[it.cat].push(it);
+  });
+
+  let html = '';
+  CAT_ORDER.forEach(cat => {
+    let arr = groups[cat];
+    if(!arr.length) return;
+    html += `<div class="section-label">${CAT_NAMES[cat]}</div>`;
+
+    arr.forEach(it => {
+      let isOpen = openRowId === it.id;
+
+      // Top line — fixture + DMX (lamper) or name + qty
+      let fixture = '', dmxLabel = '', mainName = '', sub = '';
+
+      if(it.cat === 'lamper'){
+        fixture = it.fixture;
+        dmxLabel = `U${it.dmx.u}:${pad3(it.dmx.start)}`;
+        mainName = it.name;
+        sub = `${esc(it.brand)} · ${it.watts}W · ${esc(it.dmx.mode)}`;
+      } else if(it.cat === 'styring'){
+        mainName = it.name;
+        sub = esc(it.desc || '');
+      } else {
+        mainName = it.name;
+        dmxLabel = `x${it.qty||1}`;
+        if(it.cat === 'kabler' && it.details) sub = `${it.details.length} · ${it.details.connector}`;
+        else if(it.cat === 'stativer' && it.details) sub = `H: ${it.details.fullHeight} · Max: ${it.details.maxLoad}`;
+        else sub = '';
+      }
+
+      // Dep dots
+      let dots = '';
+      if(it.deps && it.deps.length){
+        dots = '<div class="row-deps">';
+        it.deps.forEach(d => {
+          dots += `<div class="dep-dot ${d.ok?'ok':'miss'}"></div>`;
+        });
+        dots += '</div>';
+      }
+
+      html += `<div class="row cat-${it.cat}${isOpen?' open':''}" data-id="${it.id}">` +
+        `<div class="row-accent"></div>` +
+        `<div class="row-head" onclick="toggleRow(${it.id})">` +
+          `<div class="row-body">` +
+            `<div class="row-top-line">` +
+              `<span class="row-fixture">${esc(fixture)}</span>` +
+              `<span class="row-dmx">${esc(dmxLabel)}</span>` +
+            `</div>` +
+            `<div class="row-name">${esc(mainName)}</div>` +
+            `<div class="row-sub">${sub}</div>` +
+            dots +
+          `</div>` +
+          `<div class="row-chevron">&#9656;</div>` +
+        `</div>` +
+        `<div class="detail">${isOpen ? buildDetail(it) : ''}</div>` +
+      `</div>`;
+    });
+  });
+
+  document.getElementById('itemList').innerHTML = html;
+}
+
+// ===== RENDER ALL =====
+function render(){
+  renderStats();
+  renderFilters();
+  renderList();
+}
+
+// ===== MODALS =====
+function openModal(id, cb){
+  document.getElementById(id).classList.add('show');
+  if(cb) cb();
+}
+function closeModal(id){
+  document.getElementById(id).classList.remove('show');
+}
+
+// ===== PATCH UDTRÆK =====
+function renderPatch(){
+  let dmxItems = items.filter(it => it.dmx);
+  dmxItems.sort((a,b) => {
+    if(a.dmx.u !== b.dmx.u) return a.dmx.u - b.dmx.u;
+    return a.dmx.start - b.dmx.start;
+  });
+
+  let html = '';
+  let currentU = null;
+  dmxItems.forEach(it => {
+    if(it.dmx.u !== currentU){
+      currentU = it.dmx.u;
+      html += `<h3>Univers ${currentU}</h3>`;
+      html += `<table class="patch-tbl"><tr><th>Fixture</th><th>Navn</th><th>Start</th><th>Slut</th><th>Ch</th><th>Watt</th></tr>`;
+    }
+    let end = it.dmx.start + it.dmx.ch - 1;
+    html += `<tr>` +
+      `<td class="fx">${esc(it.fixture||'—')}</td>` +
+      `<td>${esc(it.name)}</td>` +
+      `<td class="dmx-col">${pad3(it.dmx.start)}</td>` +
+      `<td class="dmx-col">${pad3(end)}</td>` +
+      `<td>${it.dmx.ch}</td>` +
+      `<td>${it.watts ? it.watts+'W' : '—'}</td>` +
+      `</tr>`;
+  });
+  if(currentU !== null) html += `</table>`;
+
+  // Summary
+  let univs = new Set(dmxItems.map(it=>it.dmx.u));
+  html += `<div style="margin-top:16px;padding:12px;background:#1a1a24;border-radius:10px;text-align:center">` +
+    `<div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">${univs.size} univers · ${dmxItems.length} fixtures patched</div></div>`;
+
+  document.getElementById('patchContent').innerHTML = html;
+}
+
+// ===== PAKKELISTE =====
+function renderPack(){
+  let html = '';
+  CAT_ORDER.forEach(cat => {
+    let catItems = items.filter(it => it.cat === cat);
+    if(!catItems.length) return;
+    html += `<div class="pack-group">` +
+      `<div class="pack-group-title"><span class="pack-group-dot" style="background:${CAT_COLORS[cat]}"></span>${CAT_NAMES[cat]}</div>`;
+    catItems.forEach(it => {
+      let qty = it.qty || 1;
+      html += `<div class="pack-item">` +
+        `<div class="pack-check" onclick="this.classList.toggle('checked')"></div>` +
+        `<div class="pack-name">${esc(it.name)}</div>` +
+        `<div class="pack-qty">x${qty}</div>` +
+        `</div>`;
+    });
+    html += `</div>`;
+  });
+
+  // Deps that are missing
+  let missing = [];
+  items.forEach(it => {
+    if(it.deps) it.deps.forEach(d => { if(!d.ok) missing.push(d) });
+  });
+  if(missing.length){
+    html += `<div class="pack-group">` +
+      `<div class="pack-group-title" style="color:#f87171"><span class="pack-group-dot" style="background:#f87171"></span>MANGLER — skal anskaffes</div>`;
+    missing.forEach(d => {
+      html += `<div class="pack-item" style="border:1px solid rgba(248,113,113,.3)">` +
+        `<div class="pack-check" style="border-color:#f87171"></div>` +
+        `<div class="pack-name" style="color:#f87171">${esc(d.name)}</div>` +
+        `<div class="pack-qty" style="color:#f87171">!</div>` +
+        `</div>`;
+    });
+    html += `</div>`;
+  }
+
+  document.getElementById('packContent').innerHTML = html;
+}
+
+// ===== STRØM OVERSIGT =====
+function renderPower(){
+  let totalW = 0;
+  let perItem = [];
+  items.forEach(it => {
+    if(it.watts){
+      totalW += it.watts * (it.qty || 1);
+      perItem.push({name: it.name, watts: it.watts, qty: it.qty||1});
+    }
+  });
+
+  let amp230 = (totalW / 230).toFixed(1);
+  let amp400 = (totalW / 400).toFixed(1);
+
+  let html = `<div class="power-total">` +
+    `<div class="big">${totalW.toLocaleString('da-DK')}<span class="unit">W</span></div>` +
+    `<div class="sub">Total effekt · alle enheder</div>` +
+    `</div>`;
+
+  html += `<div class="d-grid" style="margin-bottom:16px">` +
+    `<div class="d-card"><div class="lbl">230V 1-faset</div><div class="val${amp230>16?' red':''}">${amp230}A</div></div>` +
+    `<div class="d-card"><div class="lbl">400V 3-faset</div><div class="val green">${amp400}A</div></div>` +
+    `</div>`;
+
+  html += `<h3>Per enhed</h3>`;
+  perItem.sort((a,b) => (b.watts*b.qty) - (a.watts*a.qty));
+  perItem.forEach(p => {
+    let total = p.watts * p.qty;
+    let pct = Math.round(total / totalW * 100);
+    html += `<div class="power-row">` +
+      `<div class="nm">${esc(p.name)}${p.qty>1?' x'+p.qty:''}</div>` +
+      `<div class="vl">${total}W <span style="color:#666;font-size:10px">(${pct}%)</span></div>` +
+      `</div>`;
+  });
+
+  // Strøm-typer
+  html += `<h3>Tilslutningstyper</h3>`;
+  let powerTypes = {};
+  items.forEach(it => {
+    if(it.power){
+      let type = it.power.split(',')[0].trim();
+      if(!powerTypes[type]) powerTypes[type] = [];
+      powerTypes[type].push(it.name);
+    }
+  });
+  for(let type in powerTypes){
+    html += `<div class="power-row">` +
+      `<div class="nm">${esc(type)}</div>` +
+      `<div class="vl">${powerTypes[type].length} stk</div>` +
+      `</div>`;
+  }
+
+  document.getElementById('powerContent').innerHTML = html;
+}
+
+// ===== INIT =====
+render();
+</script>
+</body>
+</html>
