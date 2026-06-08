@@ -2,487 +2,111 @@
 <html lang="da">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-<meta name="theme-color" content="#0C0C12">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>DMX Calc — Light Crew</title>
+<title>DMX Beregner</title>
 <style>
-:root{--bg:#0C0C12;--bg2:#141620;--bg3:#1c1f2b;--line:#2a3042;
---txt:#e9ecf3;--mut:#6b7280;--acc:#ffb020;--radius:14px;
---u1:#ffb020;--u2:#20b0ff;--u3:#20ff80;--u4:#ff4080;--u5:#b060ff;--u6:#ff8060}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{height:100%}
-body{background:var(--bg);color:var(--txt);font-family:Tahoma,sans-serif;
-min-height:100%;display:flex;flex-direction:column;align-items:center;
-padding:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(env(safe-area-inset-bottom,0px) + 24px);
-overflow-y:auto;-webkit-overflow-scrolling:touch}
-button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
-input,select{font-family:inherit}
-
-.wrap{width:100%;max-width:430px}
-
-/* Header */
-.hdr{display:flex;align-items:center;gap:12px;margin-bottom:24px}
-.hdr a{color:var(--mut);text-decoration:none;font-size:13px;font-weight:700;
-background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:7px 11px}
-.hdr h1{font-size:20px;font-weight:700}
-.hdr h1 span{color:var(--acc)}
-
-/* Start address */
-.start-row{display:flex;align-items:center;gap:12px;margin-bottom:20px}
-.start-row label{font-size:11px;color:var(--mut);text-transform:uppercase;
-letter-spacing:1.5px;font-weight:700;white-space:nowrap}
-.start-inp{background:var(--bg2);border:2px solid var(--line);border-radius:10px;
-padding:10px 14px;color:var(--acc);font-size:22px;font-weight:700;text-align:center;
-width:90px;outline:none;-moz-appearance:textfield}
-.start-inp::-webkit-inner-spin-button,.start-inp::-webkit-outer-spin-button{-webkit-appearance:none}
-.start-inp:focus{border-color:var(--acc)}
-.uni-badge{background:var(--bg2);border:1px solid var(--line);border-radius:10px;
-padding:8px 14px;font-size:14px;font-weight:700;color:var(--mut);margin-left:auto}
-.uni-badge b{color:var(--txt)}
-
-/* Universe bars */
-.ubars{margin-bottom:20px}
-.ubar-title{font-size:10px;color:var(--mut);text-transform:uppercase;
-letter-spacing:1.5px;font-weight:700;margin-bottom:8px}
-.ubar{margin-bottom:6px}
-.ubar-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
-.ubar-label{font-size:11px;font-weight:700}
-.ubar-count{font-size:10px;color:var(--mut);font-weight:700}
-.ubar-track{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
-.ubar-fill{height:100%;border-radius:3px;transition:width .3s ease}
-.ubar-warn{color:#ff4060;font-size:10px;font-weight:700;margin-top:2px}
-
-/* Fixture list */
-.list{margin-bottom:20px;min-height:20px}
-.list-empty{text-align:center;padding:32px 16px;color:var(--mut);font-size:13px;font-weight:700}
-
-.fix{background:var(--bg2);border:1px solid var(--line);border-radius:12px;
-padding:12px;margin-bottom:6px;display:flex;align-items:center;gap:10px;
-position:relative;transition:transform .15s, opacity .15s;user-select:none}
-.fix.dragging{opacity:.4;transform:scale(.96)}
-.fix.drag-over{border-color:var(--acc);border-style:dashed}
-.fix-grip{color:var(--mut);font-size:16px;cursor:grab;padding:2px 4px;flex-shrink:0;
-line-height:1;letter-spacing:-1px}
-.fix-grip:active{cursor:grabbing}
-.fix-num{font-size:10px;font-weight:700;color:var(--mut);width:18px;flex-shrink:0;text-align:center}
-.fix-name{font-size:13px;font-weight:700;flex:1;min-width:0;overflow:hidden;
-text-overflow:ellipsis;white-space:nowrap}
-.fix-addr{font-size:12px;font-weight:700;color:var(--mut);white-space:nowrap;flex-shrink:0}
-.fix-addr b{font-size:14px}
-.fix-ch{font-size:11px;font-weight:700;border-radius:6px;padding:3px 7px;
-flex-shrink:0;background:var(--bg3)}
-.fix-del{color:var(--mut);font-size:16px;padding:4px 2px;flex-shrink:0;
-opacity:.4;transition:opacity .15s}
-.fix-del:hover,.fix-del:active{opacity:1;color:#ff4060}
-
-.fix-uni-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-
-/* Universe divider */
-.uni-div{display:flex;align-items:center;gap:10px;margin:12px 0 8px;padding:0 4px}
-.uni-div-line{flex:1;height:1px}
-.uni-div-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;white-space:nowrap}
-
-/* Add form */
-.add{background:var(--bg2);border:1px solid var(--line);border-radius:14px;
-padding:14px;margin-bottom:16px}
-.add-title{font-size:10px;color:var(--mut);text-transform:uppercase;
-letter-spacing:1.5px;font-weight:700;margin-bottom:10px}
-.add-row{display:flex;gap:8px;align-items:center}
-.add-inp{background:var(--bg3);border:1px solid var(--line);border-radius:10px;
-padding:10px 12px;color:var(--txt);font-size:14px;font-weight:700;
-outline:none;flex:1;min-width:0}
-.add-inp:focus{border-color:var(--acc)}
-.add-inp::placeholder{color:var(--mut);font-weight:400}
-.add-ch{width:70px;flex:none}
-.add-btn{background:var(--acc);color:#0C0C12;font-size:20px;font-weight:700;
-width:44px;height:44px;border-radius:10px;flex-shrink:0;
-display:flex;align-items:center;justify-content:center;transition:transform .1s}
-.add-btn:active{transform:scale(.9)}
-
-/* Presets */
-.presets{margin-bottom:20px}
-.presets-title{font-size:10px;color:var(--mut);text-transform:uppercase;
-letter-spacing:1.5px;font-weight:700;margin-bottom:8px}
-.presets-grid{display:flex;flex-wrap:wrap;gap:6px}
-.preset{background:var(--bg2);border:1px solid var(--line);border-radius:8px;
-padding:7px 12px;font-size:12px;font-weight:700;color:var(--mut);transition:all .12s}
-.preset:active{transform:scale(.92);background:var(--bg3)}
-.preset:hover{color:var(--txt);border-color:var(--acc)}
-.preset em{font-style:normal;color:var(--acc);font-size:11px}
-
-/* Footer stats */
-.stats{display:flex;gap:12px;justify-content:center;padding:12px 0;
-border-top:1px solid var(--line);margin-top:8px}
-.stat{text-align:center}
-.stat-v{font-size:20px;font-weight:700;color:var(--acc)}
-.stat-l{font-size:9px;color:var(--mut);text-transform:uppercase;
-letter-spacing:1.5px;font-weight:700;margin-top:2px}
-
-/* Actions */
-.actions{display:flex;gap:8px;margin-bottom:20px}
-.act{flex:1;background:var(--bg2);border:1px solid var(--line);border-radius:10px;
-padding:10px 0;font-size:12px;font-weight:700;color:var(--mut);transition:all .12s;text-align:center}
-.act:active{transform:scale(.95)}
-.act.danger{color:#ff4060;border-color:rgba(255,64,96,.15)}
-.act.danger:hover{border-color:#ff4060}
-.act:hover{color:var(--txt);border-color:var(--acc)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0C0C12;color:#fff;font-family:'Tahoma',sans-serif;font-weight:bold;min-height:100dvh;max-width:430px;margin:0 auto;padding:40px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px}
+.title{font-size:20px;color:#888;letter-spacing:1px;text-transform:uppercase}
+.big-addr{font-size:80px;color:#E8820A;letter-spacing:-2px;line-height:1}
+.big-lbl{font-size:14px;color:#888;margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+.univers{font-size:16px;color:#378ADD;margin-top:-8px}
+.field{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
+.field label{font-size:14px;color:#888;text-transform:uppercase;letter-spacing:1px}
+.field input{background:#1a1a24;border:2px solid #2a2a36;border-radius:14px;padding:18px;color:#fff;font-family:'Tahoma',sans-serif;font-size:36px;font-weight:bold;text-align:center;width:200px;outline:none}
+.field input:focus{border-color:#E8820A}
+.next-btn{background:#E8820A;border:none;border-radius:16px;padding:20px 60px;color:#fff;font-family:'Tahoma',sans-serif;font-size:24px;font-weight:bold;cursor:pointer;letter-spacing:.5px;margin-top:8px}
+.next-btn:active{opacity:.8;transform:scale(.97)}
+.result{text-align:center;background:#1a1a24;border-radius:14px;padding:16px 24px;width:100%;max-width:300px}
+.result .r-lbl{font-size:12px;color:#888;text-transform:uppercase;letter-spacing:1px}
+.result .r-val{font-size:32px;color:#4ade80;margin-top:4px}
+.hist{width:100%;max-width:300px;margin-top:8px}
+.hist-ttl{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.hist-list{display:flex;flex-wrap:wrap;gap:6px}
+.hist-item{padding:6px 12px;border-radius:8px;background:#1a1a24;font-size:13px;color:#888;cursor:pointer}
+.hist-item:active{background:#2a2a36}
+.hist-item .hi-addr{color:#E8820A}
 </style>
 </head>
 <body>
-<div class="wrap">
 
-<div class="hdr">
-  <a href="index.html">&larr; Light Crew</a>
-  <h1>DMX <span>Calc</span></h1>
+<div class="title">DMX Beregner</div>
+
+<div style="text-align:center">
+<div class="big-addr" id="startDisp">1</div>
+<div class="big-lbl">Start adresse</div>
+<div class="univers" id="univers">Univers 1</div>
 </div>
 
-<!-- Start address + universe -->
-<div class="start-row">
-  <label>Start&shy;adresse</label>
-  <input class="start-inp" id="startAddr" type="number" inputmode="numeric" min="1" max="512" value="1">
-  <div class="uni-badge" id="uniBadge">U<b>1</b></div>
+<div class="field">
+<label>Start adresse</label>
+<input type="number" id="start" value="1" min="1" max="512" oninput="upd()">
 </div>
 
-<!-- Universe bars -->
-<div class="ubars" id="uBars">
-  <div class="ubar-title">Univers</div>
+<div class="field">
+<label>Antal kanaler</label>
+<input type="number" id="ch" value="15" min="1" max="512" oninput="upd()">
 </div>
 
-<!-- Fixture list -->
-<div class="list" id="fixList">
-  <div class="list-empty" id="emptyMsg">Tilf&oslash;j lamper herunder</div>
+<div class="result">
+<div class="r-lbl">Næste lampe starter på</div>
+<div class="r-val" id="nextAddr">16</div>
 </div>
 
-<!-- Actions -->
-<div class="actions" id="actionsRow" style="display:none">
-  <button class="act" onclick="copyList()">Kopi&eacute;r liste</button>
-  <button class="act" onclick="shareList()">Del</button>
-  <button class="act danger" onclick="clearAll()">Ryd alt</button>
-</div>
+<button class="next-btn" onclick="next()">NÆSTE →</button>
 
-<!-- Add form -->
-<div class="add">
-  <div class="add-title">Tilf&oslash;j lampe</div>
-  <div class="add-row">
-    <input class="add-inp" id="addName" type="text" placeholder="Lampenavn" autocomplete="off">
-    <input class="add-inp add-ch" id="addCh" type="number" inputmode="numeric" min="1" max="512" placeholder="Ch">
-    <button class="add-btn" id="addBtn" onclick="addFixture()">+</button>
-  </div>
-</div>
-
-<!-- Presets -->
-<div class="presets">
-  <div class="presets-title">Quick presets</div>
-  <div class="presets-grid" id="presetGrid"></div>
-</div>
-
-<!-- Stats -->
-<div class="stats" id="statsRow" style="display:none">
-  <div class="stat"><div class="stat-v" id="statFix">0</div><div class="stat-l">Lamper</div></div>
-  <div class="stat"><div class="stat-v" id="statCh">0</div><div class="stat-l">Kanaler</div></div>
-  <div class="stat"><div class="stat-v" id="statUni">0</div><div class="stat-l">Universer</div></div>
-</div>
-
+<div class="hist" id="histBox" style="display:none">
+<div class="hist-ttl">Historik</div>
+<div class="hist-list" id="histList"></div>
 </div>
 
 <script>
-const UCOLORS=['#ffb020','#20b0ff','#20ff80','#ff4080','#b060ff','#ff8060'];
-const PRESETS=[
-  {n:'ARRI SkyPanel S60',ch:15},{n:'ARRI SkyPanel S30',ch:15},
-  {n:'Astera Titan Tube',ch:20},{n:'Astera HydraPanel',ch:20},
-  {n:'Astera AX1 PixelTube',ch:13},{n:'Astera NYX Bulb',ch:7},
-  {n:'Moving Head',ch:23},{n:'Moving Wash',ch:16},
-  {n:'LED PAR RGBW',ch:8},{n:'LED PAR RGB',ch:6},
-  {n:'Dimmer',ch:1},{n:'Dimmer 6ch',ch:6},
-  {n:'Hazer / Fazer',ch:2},{n:'Strobe',ch:4},
-  {n:'Follow Spot',ch:5},{n:'Profil / Leko',ch:1}
-];
+var hist=JSON.parse(localStorage.getItem('dmx-hist')||'[]');
 
-let fixtures=JSON.parse(localStorage.getItem('lc-dmx-fixtures')||'[]');
-let startAddr=parseInt(localStorage.getItem('lc-dmx-start')||'1');
-
-const $=function(id){return document.getElementById(id)};
-const startInp=$('startAddr');
-const fixList=$('fixList');
-const uBarsEl=$('uBars');
-const presetGrid=$('presetGrid');
-
-// Init start
-startInp.value=startAddr;
-startInp.addEventListener('input',function(){
-  var v=parseInt(startInp.value)||1;
-  startAddr=Math.max(1,Math.min(512,v));
-  localStorage.setItem('lc-dmx-start',String(startAddr));
-  render();
-});
-startInp.addEventListener('focus',function(){startInp.select()});
-
-// Build presets
-PRESETS.forEach(function(p){
-  var b=document.createElement('button');
-  b.className='preset';
-  b.innerHTML=esc(p.n)+' <em>'+p.ch+'ch</em>';
-  b.onclick=function(){ fixtures.push({n:p.n,ch:p.ch}); save(); render(); };
-  presetGrid.appendChild(b);
-});
-
-// Add fixture
-function addFixture(){
-  var name=$('addName').value.trim();
-  var ch=parseInt($('addCh').value)||0;
-  if(!name||ch<1) return;
-  fixtures.push({n:name,ch:ch});
-  $('addName').value='';
-  $('addCh').value='';
-  $('addName').focus();
-  save(); render();
-}
-$('addName').addEventListener('keydown',function(e){if(e.key==='Enter'){$('addCh').focus();}});
-$('addCh').addEventListener('keydown',function(e){if(e.key==='Enter'){addFixture();}});
-
-// Delete
-function delFixture(i){
-  fixtures.splice(i,1);
-  save(); render();
+function upd(){
+  var s=parseInt(document.getElementById('start').value)||1;
+  var ch=parseInt(document.getElementById('ch').value)||1;
+  var n=s+ch;
+  var u=Math.ceil(s/512);
+  document.getElementById('startDisp').textContent=s;
+  document.getElementById('univers').textContent='Univers '+u+(n>512&&u===1?' → U2':'');
+  document.getElementById('nextAddr').textContent=n>512?'U'+(u+1)+':'+((n-1)%512+1):n;
 }
 
-// Clear all
-function clearAll(){
-  if(!confirm('Ryd hele listen?')) return;
-  fixtures=[];
-  save(); render();
+function next(){
+  var s=parseInt(document.getElementById('start').value)||1;
+  var ch=parseInt(document.getElementById('ch').value)||1;
+  hist.unshift({s:s,ch:ch});
+  if(hist.length>10)hist.pop();
+  localStorage.setItem('dmx-hist',JSON.stringify(hist));
+  var n=s+ch;
+  document.getElementById('start').value=n>512?((n-1)%512+1):n;
+  upd();
+  renderHist();
 }
 
-// Copy
-function copyList(){
-  if(!fixtures.length) return;
-  var lines=buildTextList();
-  navigator.clipboard.writeText(lines).then(function(){
-    var btn=document.querySelector('.act');
-    btn.textContent='Kopieret!';
-    setTimeout(function(){btn.textContent='Kopiér liste'},1200);
+function goTo(s,ch){
+  document.getElementById('start').value=s;
+  document.getElementById('ch').value=ch;
+  upd();
+}
+
+function renderHist(){
+  var box=document.getElementById('histBox');
+  var list=document.getElementById('histList');
+  if(!hist.length){box.style.display='none';return}
+  box.style.display='block';
+  list.innerHTML='';
+  hist.forEach(function(h){
+    var el=document.createElement('div');
+    el.className='hist-item';
+    el.innerHTML='<span class="hi-addr">'+h.s+'</span> +'+h.ch+'ch';
+    el.onclick=function(){goTo(h.s,h.ch)};
+    list.appendChild(el);
   });
 }
-
-function shareList(){
-  if(!fixtures.length||!navigator.share) return;
-  navigator.share({title:'DMX Patch',text:buildTextList()}).catch(function(){});
-}
-
-function buildTextList(){
-  var lines=['DMX PATCH LIST',''];
-  var addr=startAddr;
-  var curUni=Math.ceil(addr/512);
-  fixtures.forEach(function(f,i){
-    var uni=Math.ceil(addr/512);
-    var localAddr=((addr-1)%512)+1;
-    var end=addr+f.ch-1;
-    var localEnd=((end-1)%512)+1;
-    if(uni!==curUni){
-      lines.push('--- Univers '+uni+' ---');
-      curUni=uni;
-    }
-    lines.push('#'+(i+1)+'  '+f.n+'  U'+uni+': '+localAddr+'–'+localEnd+'  ('+f.ch+'ch)');
-    addr+=f.ch;
-  });
-  lines.push('','Total: '+fixtures.reduce(function(s,f){return s+f.ch},0)+' kanaler');
-  return lines.join('\n');
-}
-
-// Save
-function save(){
-  localStorage.setItem('lc-dmx-fixtures',JSON.stringify(fixtures));
-}
-
-// Drag & drop (desktop)
-var dragIdx=null;
-function dragStart(e,i){
-  dragIdx=i;
-  e.currentTarget.classList.add('dragging');
-  e.dataTransfer.effectAllowed='move';
-  e.dataTransfer.setData('text/plain',String(i));
-}
-function dragEnd(e){
-  dragIdx=null;
-  e.currentTarget.classList.remove('dragging');
-  document.querySelectorAll('.fix').forEach(function(el){el.classList.remove('drag-over')});
-}
-function dragOver(e,i){
-  e.preventDefault();
-  e.dataTransfer.dropEffect='move';
-  document.querySelectorAll('.fix').forEach(function(el){el.classList.remove('drag-over')});
-  if(i!==dragIdx) e.currentTarget.classList.add('drag-over');
-}
-function drop(e,i){
-  e.preventDefault();
-  document.querySelectorAll('.fix').forEach(function(el){el.classList.remove('drag-over')});
-  if(dragIdx===null||dragIdx===i) return;
-  var item=fixtures.splice(dragIdx,1)[0];
-  fixtures.splice(i,0,item);
-  dragIdx=null;
-  save(); render();
-}
-
-// Touch drag (mobile)
-var touchIdx=null,touchStartY=0,longPressTimer=null,isTouchDrag=false;
-function touchStart(e,i){
-  touchIdx=i;
-  isTouchDrag=false;
-  touchStartY=e.touches[0].clientY;
-  longPressTimer=setTimeout(function(){
-    isTouchDrag=true;
-    var el=document.querySelectorAll('.fix')[i];
-    if(el) el.classList.add('dragging');
-    if(navigator.vibrate) navigator.vibrate(30);
-  },300);
-}
-function touchMove(e){
-  if(touchIdx===null) return;
-  if(!isTouchDrag){
-    if(Math.abs(e.touches[0].clientY-touchStartY)>10){
-      clearTimeout(longPressTimer);
-      touchIdx=null;
-    }
-    return;
-  }
-  e.preventDefault();
-  var t=e.touches[0];
-  var els=document.querySelectorAll('.fix');
-  els.forEach(function(el,idx){
-    var r=el.getBoundingClientRect();
-    el.classList.toggle('drag-over',idx!==touchIdx&&t.clientY>r.top&&t.clientY<r.bottom);
-  });
-}
-function touchEnd(e){
-  clearTimeout(longPressTimer);
-  if(touchIdx===null) return;
-  if(!isTouchDrag){touchIdx=null;return;}
-  var els=document.querySelectorAll('.fix');
-  var targetIdx=null;
-  els.forEach(function(el,idx){
-    if(el.classList.contains('drag-over')) targetIdx=idx;
-    el.classList.remove('drag-over','dragging');
-  });
-  if(targetIdx!==null&&targetIdx!==touchIdx){
-    var item=fixtures.splice(touchIdx,1)[0];
-    fixtures.splice(targetIdx,0,item);
-    save(); render();
-  }
-  touchIdx=null;
-  isTouchDrag=false;
-}
-
-// Render
-function render(){
-  var addr=startAddr;
-  var maxUni=0;
-  var uniUsage={};
-  var computed=fixtures.map(function(f,i){
-    var s=addr;
-    var e=addr+f.ch-1;
-    var uniStart=Math.ceil(s/512);
-    var uniEnd=Math.ceil(e/512);
-    var localStart=((s-1)%512)+1;
-    var localEnd=((e-1)%512)+1;
-
-    for(var a=s;a<=e;a++){
-      var u=Math.ceil(a/512);
-      uniUsage[u]=(uniUsage[u]||0)+1;
-      if(u>maxUni) maxUni=u;
-    }
-
-    var overflow=uniStart!==uniEnd;
-    addr=e+1;
-    return{n:f.n,ch:f.ch,idx:i,start:s,end:e,uniStart:uniStart,uniEnd:uniEnd,
-      localStart:localStart,localEnd:localEnd,overflow:overflow};
-  });
-
-  if(!fixtures.length) maxUni=Math.ceil(startAddr/512);
-  var uniCount=maxUni||1;
-
-  // Universe badge
-  $('uniBadge').innerHTML=uniCount>1
-    ? 'U<b>1</b>–<b>'+uniCount+'</b>'
-    : 'U<b>1</b>';
-
-  // Universe bars
-  var barsHTML='<div class="ubar-title">Univers</div>';
-  for(var u=1;u<=Math.max(uniCount,1);u++){
-    var used=uniUsage[u]||0;
-    var pct=Math.min(100,Math.round(used/512*100));
-    var col=UCOLORS[(u-1)%UCOLORS.length];
-    var over=used>512;
-    barsHTML+='<div class="ubar">'
-      +'<div class="ubar-head">'
-      +'<span class="ubar-label" style="color:'+col+'">U'+u+'</span>'
-      +'<span class="ubar-count">'+used+' / 512</span>'
-      +'</div>'
-      +'<div class="ubar-track">'
-      +'<div class="ubar-fill" style="width:'+pct+'%;background:'+col+';"></div>'
-      +'</div>'
-      +(over?'<div class="ubar-warn">Over 512 kanaler!</div>':'')
-      +'</div>';
-  }
-  uBarsEl.innerHTML=barsHTML;
-
-  // Fixture list
-  if(!fixtures.length){
-    fixList.innerHTML='<div class="list-empty">Tilføj lamper herunder</div>';
-    $('actionsRow').style.display='none';
-    $('statsRow').style.display='none';
-    return;
-  }
-
-  $('actionsRow').style.display='flex';
-  $('statsRow').style.display='flex';
-
-  var html='';
-  var curUni=0;
-  computed.forEach(function(f,i){
-    if(f.uniStart!==curUni){
-      var col=UCOLORS[(f.uniStart-1)%UCOLORS.length];
-      if(curUni>0){
-        html+='<div class="uni-div">'
-          +'<div class="uni-div-line" style="background:'+col+'"></div>'
-          +'<span class="uni-div-label" style="color:'+col+'">Univers '+f.uniStart+'</span>'
-          +'<div class="uni-div-line" style="background:'+col+'"></div>'
-          +'</div>';
-      }
-      curUni=f.uniStart;
-    }
-
-    var col=UCOLORS[(f.uniStart-1)%UCOLORS.length];
-    var overflowTag=f.overflow?' <span style="color:#ff4060;font-size:10px">⚠ krydser U'+f.uniEnd+'</span>':'';
-
-    html+='<div class="fix" draggable="true"'
-      +' ondragstart="dragStart(event,'+i+')" ondragend="dragEnd(event)"'
-      +' ondragover="dragOver(event,'+i+')" ondrop="drop(event,'+i+')"'
-      +' ontouchstart="touchStart(event,'+i+')" ontouchmove="touchMove(event)"'
-      +' ontouchend="touchEnd(event)">'
-      +'<span class="fix-grip">⠇⠇</span>'
-      +'<span class="fix-uni-dot" style="background:'+col+'"></span>'
-      +'<span class="fix-num">'+( i+1)+'</span>'
-      +'<span class="fix-name">'+esc(f.n)+overflowTag+'</span>'
-      +'<span class="fix-addr"><b style="color:'+col+'">'+f.localStart+'</b> → <b style="color:'+col+'">'+f.localEnd+'</b></span>'
-      +'<span class="fix-ch">'+f.ch+'ch</span>'
-      +'<button class="fix-del" onclick="delFixture('+i+')">✕</button>'
-      +'</div>';
-  });
-  fixList.innerHTML=html;
-
-  // Stats
-  var totalCh=fixtures.reduce(function(s,f){return s+f.ch},0);
-  $('statFix').textContent=fixtures.length;
-  $('statCh').textContent=totalCh;
-  $('statUni').textContent=uniCount;
-}
-
-function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
-// Init
-render();
+upd();renderHist();
 </script>
 </body>
 </html>
