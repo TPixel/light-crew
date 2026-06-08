@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0C0C12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>DIP Switch — Light Crew</title>
+<style>
+:root{--bg:#0C0C12;--bg2:#141620;--bg3:#1c1f2b;--line:#2a3042;
+--txt:#e9ecf3;--mut:#6b7280;--acc:#ffb020;--radius:14px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%}
+body{background:var(--bg);color:var(--txt);font-family:Tahoma,sans-serif;
+min-height:100%;display:flex;flex-direction:column;align-items:center;
+padding:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(env(safe-area-inset-bottom,0px) + 24px);
+overflow-y:auto;-webkit-overflow-scrolling:touch}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input{font-family:inherit}
+.wrap{width:100%;max-width:430px}
+/* Header */
+.hdr{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.hdr a{color:var(--mut);text-decoration:none;font-size:13px;font-weight:700;
+background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:7px 11px}
+.hdr h1{font-size:20px;font-weight:700}
+.hdr h1 span{color:var(--acc)}
+
+/* Address display */
+.addr{text-align:center;margin-bottom:20px}
+.addr-num{font-size:80px;font-weight:700;line-height:1;color:var(--acc);
+letter-spacing:-3px;transition:color .15s}
+.addr-num.zero{color:var(--mut);opacity:.35}
+.addr-lbl{font-size:11px;color:var(--mut);text-transform:uppercase;
+letter-spacing:2px;margin-top:4px;font-weight:700}
+.addr-uni{font-size:13px;color:var(--mut);margin-top:6px}
+.addr-uni b{color:var(--txt)}
+
+/* Input */
+.inp{background:var(--bg2);border:2px solid var(--line);border-radius:var(--radius);
+padding:14px;color:var(--txt);font-size:26px;font-weight:700;text-align:center;
+width:100%;outline:none;-moz-appearance:textfield}
+.inp::-webkit-inner-spin-button,.inp::-webkit-outer-spin-button{-webkit-appearance:none}
+.inp:focus{border-color:var(--acc)}
+/* Slider */
+.sld-wrap{margin:12px 0 16px;padding:0 2px}
+.sld{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:var(--bg3);outline:none}
+.sld::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;
+background:var(--acc);border:3px solid var(--bg);box-shadow:0 2px 8px rgba(0,0,0,.5);cursor:pointer}
+.sld::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--acc);
+border:3px solid var(--bg);box-shadow:0 2px 8px rgba(0,0,0,.5);cursor:pointer}
+.sld-labels{display:flex;justify-content:space-between;font-size:9px;
+color:var(--mut);margin-top:6px;font-weight:700}
+
+/* Quick btns */
+.qbtns{display:flex;gap:8px;margin-bottom:24px}
+.qb{flex:1;background:var(--bg2);border:1px solid var(--line);border-radius:10px;
+padding:11px 0;font-size:15px;font-weight:700;color:var(--mut);transition:transform .1s}
+.qb:active{transform:scale(.92);background:var(--bg3)}
+.qb.rst{color:var(--acc);border-color:rgba(255,176,32,.15)}
+
+/* DIP housing */
+.dip{background:#111319;border:2px solid #252836;border-radius:16px;
+padding:16px 10px 14px;margin-bottom:24px}
+.dip-on{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;
+color:var(--mut);text-align:center;margin-bottom:10px}
+/* Switches */
+.sw-row{display:flex;gap:3px;padding:0 2px}
+.sw-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.sw-n{font-size:9px;font-weight:700;color:var(--mut)}
+.sw{width:100%;max-width:38px;height:58px;background:#08080c;border:2px solid #1e2130;
+border-radius:5px;position:relative;cursor:pointer;transition:border-color .2s}
+.sw.on{border-color:var(--acc)}
+.sw-glow{position:absolute;inset:2px;border-radius:2px;background:transparent;transition:background .25s}
+.sw.on .sw-glow{background:linear-gradient(180deg,rgba(255,176,32,.2) 0%,rgba(255,176,32,.03) 100%)}
+.sw-knob{position:absolute;left:3px;right:3px;height:22px;border-radius:3px;
+background:linear-gradient(180deg,#404558,#2d3040);bottom:3px;
+transition:all .2s cubic-bezier(.4,0,.2,1)}
+.sw.on .sw-knob{bottom:auto;top:3px;
+background:linear-gradient(180deg,var(--acc),#d09010);
+box-shadow:0 3px 10px rgba(255,176,32,.35)}
+.sw:active .sw-knob{transform:scaleY(.9)}
+.sw-v{font-size:8px;font-weight:700;color:var(--mut);transition:color .2s}
+.sw-col.on .sw-v{color:var(--acc)}
+
+/* Binary */
+.bin{text-align:center;margin-top:10px;font-family:"Courier New",monospace;
+font-size:14px;letter-spacing:4px;color:var(--mut)}
+.bin .on{color:var(--acc);font-weight:700}
+/* History */
+.hist{margin-top:4px}
+.hist-t{font-size:10px;color:var(--mut);text-transform:uppercase;
+letter-spacing:1.5px;font-weight:700;margin-bottom:8px}
+.hist-l{display:flex;flex-wrap:wrap;gap:6px}
+.hi{background:var(--bg2);border:1px solid var(--line);border-radius:8px;
+padding:7px 14px;font-size:14px;font-weight:700;color:var(--mut);transition:all .12s}
+.hi:active{transform:scale(.92)}
+.hi:hover{color:var(--txt);border-color:var(--acc)}
+.hist-e{font-size:11px;color:var(--mut);opacity:.4}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hdr">
+  <a href="index.html">← Light Crew</a>
+  <h1>DIP <span>Switch</span></h1>
+</div>
+
+<div class="addr">
+  <div class="addr-num zero" id="addrNum">0</div>
+  <div class="addr-lbl">DMX Adresse</div>
+  <div class="addr-uni" id="addrUni">—</div>
+</div>
+<input class="inp" id="inp" type="number" inputmode="numeric"
+  pattern="[0-9]*" min="0" max="511" value="0" placeholder="0–511">
+
+<div class="sld-wrap">
+  <input class="sld" id="sld" type="range" min="0" max="511" value="0">
+  <div class="sld-labels">
+    <span>0</span><span>128</span><span>256</span><span>384</span><span>511</span>
+  </div>
+</div>
+
+<div class="qbtns">
+  <button class="qb" onclick="adj(-10)">−10</button>
+  <button class="qb" onclick="adj(-1)">−1</button>
+  <button class="qb rst" onclick="go(0)">RST</button>
+  <button class="qb" onclick="adj(1)">+1</button>
+  <button class="qb" onclick="adj(10)">+10</button>
+</div>
+
+<div class="dip">
+  <div class="dip-on">ON ↑</div>
+  <div class="sw-row" id="swRow"></div>
+  <div class="bin" id="binDisp">000000000</div>
+</div>
+
+<div class="hist">
+  <div class="hist-t">Seneste</div>
+  <div class="hist-l" id="histList"><span class="hist-e">—</span></div>
+</div>
+
+</div>
+<script>
+const VALS=[1,2,4,8,16,32,64,128,256];
+let addr=0, hist=JSON.parse(localStorage.getItem('lc-dip-hist')||'[]'), hT=null;
+
+// Build switches
+const swRow=document.getElementById('swRow');
+VALS.forEach((v,i)=>{
+  const c=document.createElement('div');
+  c.className='sw-col';
+  c.innerHTML=`<span class="sw-n">${i+1}</span>
+    <div class="sw" onclick="flip(${i})"><div class="sw-glow"></div><div class="sw-knob"></div></div>
+    <span class="sw-v">${v}</span>`;
+  swRow.appendChild(c);
+});
+
+const $=id=>document.getElementById(id);
+const inp=$('inp'), sld=$('sld'), addrNum=$('addrNum'),
+      addrUni=$('addrUni'), binDisp=$('binDisp'), histList=$('histList');
+
+inp.addEventListener('input',()=>{
+  let v=parseInt(inp.value)||0;
+  addr=Math.max(0,Math.min(511,v));
+  sync('inp');
+});
+inp.addEventListener('focus',()=>inp.select());
+inp.addEventListener('blur',()=>pushH(addr));
+sld.addEventListener('input',()=>{ addr=parseInt(sld.value); sync('sld'); });
+sld.addEventListener('change',()=>pushH(addr));
+function flip(i){
+  addr^=(1<<i);
+  addr=Math.max(0,Math.min(511,addr));
+  sync('sw');
+  clearTimeout(hT);
+  hT=setTimeout(()=>pushH(addr),600);
+}
+function adj(d){
+  addr=Math.max(0,Math.min(511,addr+d));
+  sync(); pushH(addr);
+}
+function go(v){
+  addr=Math.max(0,Math.min(511,v));
+  sync(); if(v>0)pushH(addr);
+}
+function sync(src){
+  addrNum.textContent=addr;
+  addrNum.classList.toggle('zero',addr===0);
+  if(addr===0) addrUni.textContent='—';
+  else addrUni.innerHTML=`Univers <b>1</b> · Kanal <b>${addr}</b>`;
+  if(src!=='inp') inp.value=addr;
+  if(src!=='sld') sld.value=addr;
+  document.querySelectorAll('.sw').forEach((sw,i)=>{
+    const on=(addr>>i)&1;
+    sw.classList.toggle('on',!!on);
+    sw.closest('.sw-col').classList.toggle('on',!!on);
+  });
+  const bits=addr.toString(2).padStart(9,'0').split('').reverse();
+  binDisp.innerHTML=bits.map(b=>b==='1'?`<span class="on">${b}</span>`:b).join('');
+}
+function pushH(v){
+  if(v===0)return;
+  hist=hist.filter(x=>x!==v);
+  hist.unshift(v);
+  hist=hist.slice(0,10);
+  localStorage.setItem('lc-dip-hist',JSON.stringify(hist));
+  renderH();
+}
+function renderH(){
+  if(!hist.length){histList.innerHTML='<span class="hist-e">—</span>';return;}
+  histList.innerHTML=hist.map(v=>`<button class="hi" onclick="go(${v})">${v}</button>`).join('');
+}
+renderH(); sync();
+</script>
+</body>
+</html>
