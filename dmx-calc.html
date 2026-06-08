@@ -7,51 +7,48 @@
 <title>DMX Beregner</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#0C0C12;color:#fff;font-family:'Tahoma',sans-serif;font-weight:bold;min-height:100dvh;max-width:430px;margin:0 auto;padding:40px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px}
-.title{font-size:20px;color:#888;letter-spacing:1px;text-transform:uppercase}
-.big-addr{font-size:80px;color:#E8820A;letter-spacing:-2px;line-height:1}
-.big-lbl{font-size:14px;color:#888;margin-top:4px;text-transform:uppercase;letter-spacing:1px}
-.univers{font-size:16px;color:#378ADD;margin-top:-8px}
-.field{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
-.field label{font-size:14px;color:#888;text-transform:uppercase;letter-spacing:1px}
-.field input{background:#1a1a24;border:2px solid #2a2a36;border-radius:14px;padding:18px;color:#fff;font-family:'Tahoma',sans-serif;font-size:36px;font-weight:bold;text-align:center;width:200px;outline:none}
-.field input:focus{border-color:#E8820A}
-.next-btn{background:#E8820A;border:none;border-radius:16px;padding:20px 60px;color:#fff;font-family:'Tahoma',sans-serif;font-size:24px;font-weight:bold;cursor:pointer;letter-spacing:.5px;margin-top:8px}
+body{background:#0C0C12;color:#fff;font-family:'Tahoma',sans-serif;font-weight:bold;min-height:100dvh;max-width:430px;margin:0 auto;padding:40px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+.title{font-size:16px;color:#555;letter-spacing:1px;text-transform:uppercase}
+.inputs{display:flex;gap:12px;align-items:flex-end}
+.inp-grp{display:flex;flex-direction:column;align-items:center;gap:4px}
+.inp-grp label{font-size:11px;color:#666;text-transform:uppercase;letter-spacing:.5px}
+.inp-grp input{background:#1a1a24;border:1.5px solid #2a2a36;border-radius:10px;padding:12px;color:#fff;font-family:'Tahoma',sans-serif;font-size:24px;font-weight:bold;text-align:center;width:120px;outline:none}
+.inp-grp input:focus{border-color:#E8820A}
+.arrow{font-size:28px;color:#555;padding-bottom:12px}
+.result-box{text-align:center;width:100%;padding:24px 16px;background:#1a1a24;border-radius:20px;border:2px solid #E8820A}
+.r-lbl{font-size:14px;color:#888;text-transform:uppercase;letter-spacing:1px}
+.r-addr{font-size:100px;color:#E8820A;letter-spacing:-3px;line-height:1.1;margin:8px 0}
+.r-univ{font-size:18px;color:#378ADD}
+.next-btn{background:#E8820A;border:none;border-radius:16px;padding:18px 50px;color:#fff;font-family:'Tahoma',sans-serif;font-size:22px;font-weight:bold;cursor:pointer;letter-spacing:.5px}
 .next-btn:active{opacity:.8;transform:scale(.97)}
-.result{text-align:center;background:#1a1a24;border-radius:14px;padding:16px 24px;width:100%;max-width:300px}
-.result .r-lbl{font-size:12px;color:#888;text-transform:uppercase;letter-spacing:1px}
-.result .r-val{font-size:32px;color:#4ade80;margin-top:4px}
-.hist{width:100%;max-width:300px;margin-top:8px}
-.hist-ttl{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.hist{width:100%;max-width:340px;margin-top:4px}
+.hist-ttl{font-size:11px;color:#444;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
 .hist-list{display:flex;flex-wrap:wrap;gap:6px}
-.hist-item{padding:6px 12px;border-radius:8px;background:#1a1a24;font-size:13px;color:#888;cursor:pointer}
+.hist-item{padding:5px 10px;border-radius:6px;background:#1a1a24;font-size:12px;color:#666;cursor:pointer}
 .hist-item:active{background:#2a2a36}
-.hist-item .hi-addr{color:#E8820A}
+.hist-item .ha{color:#E8820A}
 </style>
 </head>
 <body>
 
 <div class="title">DMX Beregner</div>
 
-<div style="text-align:center">
-<div class="big-addr" id="startDisp">1</div>
-<div class="big-lbl">Start adresse</div>
-<div class="univers" id="univers">Univers 1</div>
+<div class="inputs">
+<div class="inp-grp">
+<label>Start</label>
+<input type="number" id="start" value="1" min="1" max="512" oninput="calc()">
+</div>
+<div class="arrow">+</div>
+<div class="inp-grp">
+<label>Kanaler</label>
+<input type="number" id="ch" value="15" min="1" max="512" oninput="calc()">
+</div>
 </div>
 
-<div class="field">
-<label>Start adresse</label>
-<input type="number" id="start" value="1" min="1" max="512" oninput="upd()">
-</div>
-
-<div class="field">
-<label>Antal kanaler</label>
-<input type="number" id="ch" value="15" min="1" max="512" oninput="upd()">
-</div>
-
-<div class="result">
-<div class="r-lbl">Næste lampe starter på</div>
-<div class="r-val" id="nextAddr">16</div>
+<div class="result-box">
+<div class="r-lbl">Næste startadresse</div>
+<div class="r-addr" id="nextAddr">16</div>
+<div class="r-univ" id="nextUniv">Univers 1</div>
 </div>
 
 <button class="next-btn" onclick="next()">NÆSTE →</button>
@@ -62,34 +59,30 @@ body{background:#0C0C12;color:#fff;font-family:'Tahoma',sans-serif;font-weight:b
 </div>
 
 <script>
-var hist=JSON.parse(localStorage.getItem('dmx-hist')||'[]');
+var hist=JSON.parse(localStorage.getItem('dmx-hist2')||'[]');
 
-function upd(){
+function calc(){
   var s=parseInt(document.getElementById('start').value)||1;
   var ch=parseInt(document.getElementById('ch').value)||1;
   var n=s+ch;
-  var u=Math.ceil(s/512);
-  document.getElementById('startDisp').textContent=s;
-  document.getElementById('univers').textContent='Univers '+u+(n>512&&u===1?' → U2':'');
-  document.getElementById('nextAddr').textContent=n>512?'U'+(u+1)+':'+((n-1)%512+1):n;
+  var u=Math.ceil(n/512);
+  var local=((n-1)%512)+1;
+  document.getElementById('nextAddr').textContent=n>512?local:n;
+  document.getElementById('nextUniv').textContent='Univers '+u;
 }
 
 function next(){
   var s=parseInt(document.getElementById('start').value)||1;
   var ch=parseInt(document.getElementById('ch').value)||1;
-  hist.unshift({s:s,ch:ch});
+  // Gem i historik
+  hist.unshift({s:s,ch:ch,n:s+ch});
   if(hist.length>10)hist.pop();
-  localStorage.setItem('dmx-hist',JSON.stringify(hist));
+  localStorage.setItem('dmx-hist2',JSON.stringify(hist));
+  renderHist();
+  // Sæt start til næste adresse — behold antal kanaler
   var n=s+ch;
   document.getElementById('start').value=n>512?((n-1)%512+1):n;
-  upd();
-  renderHist();
-}
-
-function goTo(s,ch){
-  document.getElementById('start').value=s;
-  document.getElementById('ch').value=ch;
-  upd();
+  calc();
 }
 
 function renderHist(){
@@ -101,12 +94,16 @@ function renderHist(){
   hist.forEach(function(h){
     var el=document.createElement('div');
     el.className='hist-item';
-    el.innerHTML='<span class="hi-addr">'+h.s+'</span> +'+h.ch+'ch';
-    el.onclick=function(){goTo(h.s,h.ch)};
+    el.innerHTML='<span class="ha">'+h.s+'</span>+'+h.ch+'='+h.n;
+    el.onclick=function(){
+      document.getElementById('start').value=h.s;
+      document.getElementById('ch').value=h.ch;
+      calc();
+    };
     list.appendChild(el);
   });
 }
-upd();renderHist();
+calc();renderHist();
 </script>
 </body>
 </html>
