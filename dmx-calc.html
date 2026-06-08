@@ -15,10 +15,18 @@ body{background:#0C0C12;color:#fff;font-family:'Tahoma',sans-serif;font-weight:b
 .inp-grp input{background:#1a1a24;border:1.5px solid #2a2a36;border-radius:10px;padding:12px;color:#fff;font-family:'Tahoma',sans-serif;font-size:24px;font-weight:bold;text-align:center;width:120px;outline:none}
 .inp-grp input:focus{border-color:#E8820A}
 .arrow{font-size:28px;color:#555;padding-bottom:12px}
-.result-box{text-align:center;width:100%;padding:24px 16px;background:#1a1a24;border-radius:20px;border:2px solid #E8820A}
+.result-box{text-align:center;width:100%;padding:24px 16px;background:#1a1a24;border-radius:20px;border:2px solid #E8820A;transition:border-color .3s}
+.result-box.warn{border-color:#FBBF24}
+.result-box.over{border-color:#f87171}
 .r-lbl{font-size:14px;color:#888;text-transform:uppercase;letter-spacing:1px}
-.r-addr{font-size:100px;color:#E8820A;letter-spacing:-3px;line-height:1.1;margin:8px 0}
+.r-addr{font-size:100px;letter-spacing:-3px;line-height:1.1;margin:8px 0;color:#E8820A;transition:color .3s}
+.r-addr.warn{color:#FBBF24}
+.r-addr.over{color:#f87171}
 .r-univ{font-size:18px;color:#378ADD}
+.r-warn{font-size:14px;margin-top:8px;padding:8px 12px;border-radius:8px;display:none}
+.r-warn.show-warn{display:block;background:rgba(251,191,36,.1);color:#FBBF24}
+.r-warn.show-over{display:block;background:rgba(248,113,113,.1);color:#f87171}
+.r-free{font-size:13px;color:#555;margin-top:6px}
 .btns{display:flex;gap:12px;width:100%;max-width:340px}
 .btn{flex:1;border:none;border-radius:16px;padding:18px;color:#fff;font-family:'Tahoma',sans-serif;font-size:22px;font-weight:bold;cursor:pointer;letter-spacing:.5px;text-align:center}
 .btn:active{opacity:.8;transform:scale(.97)}
@@ -42,10 +50,12 @@ body{background:#0C0C12;color:#fff;font-family:'Tahoma',sans-serif;font-weight:b
 </div>
 </div>
 
-<div class="result-box">
+<div class="result-box" id="resBox">
 <div class="r-lbl">Næste startadresse</div>
 <div class="r-addr" id="nextAddr">16</div>
 <div class="r-univ" id="nextUniv">Univers 1</div>
+<div class="r-free" id="freeInfo"></div>
+<div class="r-warn" id="warn"></div>
 </div>
 
 <div class="btns">
@@ -60,10 +70,37 @@ function calc(){
   var s=parseInt(document.getElementById('start').value)||1;
   var ch=parseInt(document.getElementById('ch').value)||1;
   var n=s+ch;
-  var u=Math.ceil(n/512);
-  var local=((n-1)%512)+1;
+  var endAddr=s+ch-1;
+  var u=Math.ceil(s/512);
+  var nextU=Math.ceil(n/512);
+  var local=n>512?((n-1)%512)+1:n;
+  var free=512-((s-1)%512);
+  var box=document.getElementById('resBox');
+  var addrEl=document.getElementById('nextAddr');
+  var warn=document.getElementById('warn');
+  var freeEl=document.getElementById('freeInfo');
+
   document.getElementById('nextAddr').textContent=n>512?local:n;
-  document.getElementById('nextUniv').textContent='Univers '+u;
+  document.getElementById('nextUniv').textContent='Univers '+nextU;
+  freeEl.textContent=free+' kanaler ledige i univers '+u;
+
+  box.className='result-box';
+  addrEl.className='r-addr';
+  warn.className='r-warn';
+
+  if(endAddr>512){
+    box.className='result-box over';
+    addrEl.className='r-addr over';
+    warn.className='r-warn show-over';
+    warn.textContent='Overskrider univers '+u+'! Lampen passer ikke — mangler '+(endAddr-512)+' kanaler.';
+  } else if(free<30){
+    box.className='result-box warn';
+    addrEl.className='r-addr warn';
+    warn.className='r-warn show-warn';
+    warn.textContent='Kun '+free+' kanaler tilbage i univers '+u;
+  } else {
+    warn.className='r-warn';
+  }
 }
 
 function next(){
