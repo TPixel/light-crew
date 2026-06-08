@@ -51,7 +51,7 @@ body{background:#0C0C12;color:#fff;font-family:'Tahoma',sans-serif;font-weight:b
 <div class="r-univ" id="nextUniv">Univers 1</div>
 </div>
 
-<button class="next-btn" onclick="next()">NÆSTE →</button>
+<div style="display:flex;gap:12px"><button class="next-btn" style="background:#555;flex:1" onclick="last()">← SIDSTE</button><button class="next-btn" style="flex:1" onclick="next()">NÆSTE →</button></div>
 
 <div class="hist" id="histBox" style="display:none">
 <div class="hist-ttl">Historik</div>
@@ -103,6 +103,7 @@ function renderHist(){
     list.appendChild(el);
   });
 }
+function last(){if(!hist.length)return;var h=hist.shift();localStorage.setItem('dmx-hist2',JSON.stringify(hist));document.getElementById('start').value=h.s;document.getElementById('ch').value=h.ch;calc();renderHist()}
 calc();renderHist();
 </script>
 </body>
