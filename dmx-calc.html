@@ -19,14 +19,11 @@ body{background:#0C0C12;color:#fff;font-family:'Tahoma',sans-serif;font-weight:b
 .r-lbl{font-size:14px;color:#888;text-transform:uppercase;letter-spacing:1px}
 .r-addr{font-size:100px;color:#E8820A;letter-spacing:-3px;line-height:1.1;margin:8px 0}
 .r-univ{font-size:18px;color:#378ADD}
-.next-btn{background:#E8820A;border:none;border-radius:16px;padding:18px 50px;color:#fff;font-family:'Tahoma',sans-serif;font-size:22px;font-weight:bold;cursor:pointer;letter-spacing:.5px}
-.next-btn:active{opacity:.8;transform:scale(.97)}
-.hist{width:100%;max-width:340px;margin-top:4px}
-.hist-ttl{font-size:11px;color:#444;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
-.hist-list{display:flex;flex-wrap:wrap;gap:6px}
-.hist-item{padding:5px 10px;border-radius:6px;background:#1a1a24;font-size:12px;color:#666;cursor:pointer}
-.hist-item:active{background:#2a2a36}
-.hist-item .ha{color:#E8820A}
+.btns{display:flex;gap:12px;width:100%;max-width:340px}
+.btn{flex:1;border:none;border-radius:16px;padding:18px;color:#fff;font-family:'Tahoma',sans-serif;font-size:22px;font-weight:bold;cursor:pointer;letter-spacing:.5px;text-align:center}
+.btn:active{opacity:.8;transform:scale(.97)}
+.btn-last{background:#555}
+.btn-next{background:#E8820A}
 </style>
 </head>
 <body>
@@ -51,15 +48,13 @@ body{background:#0C0C12;color:#fff;font-family:'Tahoma',sans-serif;font-weight:b
 <div class="r-univ" id="nextUniv">Univers 1</div>
 </div>
 
-<div style="display:flex;gap:12px"><button class="next-btn" style="background:#555;flex:1" onclick="last()">← SIDSTE</button><button class="next-btn" style="flex:1" onclick="next()">NÆSTE →</button></div>
-
-<div class="hist" id="histBox" style="display:none">
-<div class="hist-ttl">Historik</div>
-<div class="hist-list" id="histList"></div>
+<div class="btns">
+<button class="btn btn-last" onclick="last()">← SIDSTE</button>
+<button class="btn btn-next" onclick="next()">NÆSTE →</button>
 </div>
 
 <script>
-var hist=JSON.parse(localStorage.getItem('dmx-hist2')||'[]');
+var prevStart=null,prevCh=null;
 
 function calc(){
   var s=parseInt(document.getElementById('start').value)||1;
@@ -74,37 +69,21 @@ function calc(){
 function next(){
   var s=parseInt(document.getElementById('start').value)||1;
   var ch=parseInt(document.getElementById('ch').value)||1;
-  // Gem i historik
-  hist.unshift({s:s,ch:ch,n:s+ch});
-  if(hist.length>10)hist.pop();
-  localStorage.setItem('dmx-hist2',JSON.stringify(hist));
-  renderHist();
-  // Sæt start til næste adresse — behold antal kanaler
+  prevStart=s;prevCh=ch;
   var n=s+ch;
   document.getElementById('start').value=n>512?((n-1)%512+1):n;
   calc();
 }
 
-function renderHist(){
-  var box=document.getElementById('histBox');
-  var list=document.getElementById('histList');
-  if(!hist.length){box.style.display='none';return}
-  box.style.display='block';
-  list.innerHTML='';
-  hist.forEach(function(h){
-    var el=document.createElement('div');
-    el.className='hist-item';
-    el.innerHTML='<span class="ha">'+h.s+'</span>+'+h.ch+'='+h.n;
-    el.onclick=function(){
-      document.getElementById('start').value=h.s;
-      document.getElementById('ch').value=h.ch;
-      calc();
-    };
-    list.appendChild(el);
-  });
+function last(){
+  if(prevStart===null)return;
+  document.getElementById('start').value=prevStart;
+  document.getElementById('ch').value=prevCh;
+  prevStart=null;prevCh=null;
+  calc();
 }
-function last(){if(!hist.length)return;var h=hist.shift();localStorage.setItem('dmx-hist2',JSON.stringify(hist));document.getElementById('start').value=h.s;document.getElementById('ch').value=h.ch;calc();renderHist()}
-calc();renderHist();
+
+calc();
 </script>
 </body>
 </html>
