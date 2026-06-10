@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Pakkeliste — Light Crew</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0C0C12;color:#fff;font-family:'Tahoma',sans-serif;font-weight:bold;max-width:430px;margin:0 auto;padding:16px 12px 100px}
+.hdr{padding:12px 0 16px;border-bottom:2px solid #2a2a36;margin-bottom:16px}
+.hdr-prod{font-size:14px;color:#888;text-transform:uppercase;letter-spacing:1px}
+.hdr-loc{font-size:28px;margin-top:4px}
+.hdr-dato{font-size:13px;color:#666;margin-top:4px}
+.stats{display:flex;gap:8px;margin-bottom:16px}
+.stat{flex:1;background:#1a1a24;border-radius:10px;padding:10px;text-align:center}
+.stat-n{font-size:24px}
+.stat-l{font-size:10px;color:#666;text-transform:uppercase;margin-top:2px}
+.stat-n.grn{color:#4ade80}
+.stat-n.red{color:#f87171}
+.stat-n.ylw{color:#FBBF24}
+.cat{margin-bottom:16px}
+.cat-hdr{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1.5px solid #2a2a36;margin-bottom:6px}
+.cat-dot{width:12px;height:12px;border-radius:3px}
+.cat-name{font-size:16px;text-transform:uppercase;letter-spacing:1px;color:#888}
+.cat-count{font-size:13px;color:#555;margin-left:auto}
+.item{display:flex;align-items:center;gap:10px;padding:12px;background:#1a1a24;border-radius:10px;margin-bottom:6px;border-left:4px solid #555;cursor:pointer;-webkit-user-select:none;user-select:none}
+.item.lamp{border-left-color:#378ADD}
+.item.cable{border-left-color:#1D9E75}
+.item.stand{border-left-color:#BA7517}
+.item.ctrl{border-left-color:#534AB7}
+.item.grip{border-left-color:#D85A30}
+.chk{width:32px;height:32px;border-radius:8px;border:2.5px solid #555;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;transition:all .15s}
+.item.packed .chk{background:#1a3a1a;border-color:#4ade80;color:#4ade80}
+.item.missing .chk{background:#3a1a1a;border-color:#f87171;color:#f87171}
+.item-info{flex:1;min-width:0}
+.item-name{font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item.packed .item-name{color:#4ade80}
+.item.missing .item-name{color:#f87171;text-decoration:line-through}
+.item-sub{font-size:12px;color:#666;margin-top:2px}
+.item-qty{font-size:20px;color:#888;min-width:40px;text-align:right}
+.item.packed .item-qty{color:#4ade80}
+.btns{position:fixed;bottom:0;left:0;right:0;background:#0C0C12;border-top:1.5px solid #2a2a36;padding:12px 16px env(safe-area-inset-bottom);display:flex;gap:8px;max-width:430px;margin:0 auto}
+.btn{flex:1;padding:14px;border-radius:12px;border:none;font-family:'Tahoma',sans-serif;font-size:16px;font-weight:bold;cursor:pointer;text-align:center}
+.btn:active{opacity:.8;transform:scale(.97)}
+.btn-print{background:#E8820A;color:#fff}
+.btn-reset{background:#2a2a36;color:#888}
+@media print{
+body{background:#fff;color:#000;padding:16px;max-width:100%}
+.hdr{border-bottom:2px solid #000}
+.hdr-prod,.hdr-dato{color:#444}
+.hdr-loc{color:#000}
+.stats,.btns{display:none}
+.cat-hdr{border-bottom:1.5px solid #ccc}
+.cat-name{color:#444}
+.item{background:#fff;border:1px solid #ddd;border-left:4px solid #888}
+.item.lamp{border-left-color:#378ADD}
+.item.cable{border-left-color:#1D9E75}
+.item.stand{border-left-color:#BA7517}
+.item.ctrl{border-left-color:#534AB7}
+.item.grip{border-left-color:#D85A30}
+.chk{border:2px solid #000;width:24px;height:24px}
+.item.packed .chk{background:#ddd}
+.item.missing .chk{background:#fcc}
+.item-name{color:#000;font-size:15px}
+.item.packed .item-name{color:#000;text-decoration:none}
+.item.missing .item-name{color:#c00}
+.item-sub{color:#666}
+.item-qty{color:#000}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+<div class="hdr-prod">Den Lukkede Bog · Studie A</div>
+<div class="hdr-loc">Pakkeliste</div>
+<div class="hdr-dato" id="dato"></div>
+</div>
+
+<div class="stats">
+<div class="stat"><div class="stat-n" id="s-total">0</div><div class="stat-l">enheder</div></div>
+<div class="stat"><div class="stat-n grn" id="s-pakket">0</div><div class="stat-l">pakket</div></div>
+<div class="stat"><div class="stat-n red" id="s-mangler">0</div><div class="stat-l">mangler</div></div>
+<div class="stat"><div class="stat-n ylw" id="s-venter">0</div><div class="stat-l">venter</div></div>
+</div>
+
+<div id="list"></div>
+
+<div class="btns">
+<button class="btn btn-reset" onclick="resetAll()">Nulstil</button>
+<button class="btn btn-print" onclick="window.print()">Print pakkeliste</button>
+</div>
+
+<script>
+var items=[
+{n:'SkyPanel S60-C',sub:'Arri · 455W · F01',qty:1,cat:'lamp'},
+{n:'Astera Titan Tube FP1',sub:'Astera · 72W · F02',qty:4,cat:'lamp'},
+{n:'LS 600d Pro',sub:'Aputure · 600W · F03',qty:1,cat:'lamp'},
+{n:'Creamsource Vortex8',sub:'Creamsource · 1200W · F04',qty:1,cat:'lamp'},
+{n:'grandMA3 onPC + Node',sub:'MA Lighting · 2 universer',qty:1,cat:'ctrl'},
+{n:'5-pin DMX kabel 10m',sub:'Generic',qty:6,cat:'cable'},
+{n:'5-pin DMX kabel 5m',sub:'Generic',qty:4,cat:'cable'},
+{n:'Powercon TRUE1 10m',sub:'Neutrik',qty:4,cat:'cable'},
+{n:'Powercon TRUE1 5m',sub:'Neutrik',qty:6,cat:'cable'},
+{n:'CEE 32A 25m',sub:'',qty:2,cat:'cable'},
+{n:'CEE 16A adapter',sub:'',qty:4,cat:'cable'},
+{n:'C-Stand 40" + arm',sub:'Avenger · max 9.8kg',qty:6,cat:'stand'},
+{n:'Combo Stand',sub:'max 40kg',qty:2,cat:'stand'},
+{n:'Low Boy Roller',sub:'',qty:2,cat:'stand'},
+{n:'Baby Stand',sub:'',qty:4,cat:'stand'},
+{n:'Sandsæk 15kg',sub:'',qty:12,cat:'grip'},
+{n:'4x4 ramme + diff',sub:'',qty:2,cat:'grip'},
+{n:'Mafer tvinger',sub:'',qty:8,cat:'grip'}
+];
+
+var cats=[
+{id:'lamp',name:'Lamper',color:'#378ADD'},
+{id:'ctrl',name:'Styring',color:'#534AB7'},
+{id:'cable',name:'Kabler',color:'#1D9E75'},
+{id:'stand',name:'Stativer',color:'#BA7517'},
+{id:'grip',name:'Grip',color:'#D85A30'}
+];
+
+var state=JSON.parse(localStorage.getItem('pk-state')||'{}');
+
+document.getElementById('dato').textContent=new Date().toLocaleDateString('da-DK',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+function render(){
+var list=document.getElementById('list');
+list.innerHTML='';
+var total=0,pakket=0,mangler=0;
+cats.forEach(function(c){
+var catItems=items.filter(function(it){return it.cat===c.id});
+if(!catItems.length)return;
+var catEl=document.createElement('div');
+catEl.className='cat';
+var hdr=document.createElement('div');
+hdr.className='cat-hdr';
+hdr.innerHTML='<div class="cat-dot" style="background:'+c.color+'"></div><div class="cat-name">'+c.name+'</div><div class="cat-count">'+catItems.length+' poster</div>';
+catEl.appendChild(hdr);
+catItems.forEach(function(it,i){
+var key=c.id+'-'+i;
+var s=state[key]||'';
+var el=document.createElement('div');
+el.className='item '+c.id+(s?' '+s:'');
+el.innerHTML='<div class="chk">'+(s==='packed'?'✓':s==='missing'?'✗':'')+'</div>'+
+'<div class="item-info"><div class="item-name">'+it.n+'</div>'+(it.sub?'<div class="item-sub">'+it.sub+'</div>':'')+'</div>'+
+'<div class="item-qty">x'+it.qty+'</div>';
+el.onclick=function(){
+if(s===''||s===undefined){state[key]='packed'}
+else if(s==='packed'){state[key]='missing'}
+else{delete state[key]}
+localStorage.setItem('pk-state',JSON.stringify(state));
+render();
+};
+catEl.appendChild(el);
+total++;
+if(s==='packed')pakket++;
+if(s==='missing')mangler++;
+});
+list.appendChild(catEl);
+});
+document.getElementById('s-total').textContent=total;
+document.getElementById('s-pakket').textContent=pakket;
+document.getElementById('s-mangler').textContent=mangler;
+document.getElementById('s-venter').textContent=total-pakket-mangler;
+}
+
+function resetAll(){
+if(!confirm('Nulstil alle afkrydsninger?'))return;
+state={};
+localStorage.setItem('pk-state',JSON.stringify(state));
+render();
+}
+
+render();
+</script>
+</body>
+</html>
